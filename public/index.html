@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Shivoy Interior – Estimate Maker</title>
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--ink:#2b2823;--mute:#7a7366;--gold:#c4b49b;--gold-d:#9c8a6c;--line:#e4ddd0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1050px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.head{display:block}
+.head .ico{width:70px}.head .logo{max-width:100%;width:340px;margin:0 auto;display:block}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:14px}
+label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);display:block;margin-bottom:3px}
+input,select,textarea{font:inherit;color:inherit;width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:820px}
+th{background:var(--ink);color:#fff;font-size:12px;padding:8px;text-align:left;font-weight:600}
+td{padding:5px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.n{width:34px;text-align:center;color:var(--mute)}td.t{text-align:right;font-weight:600;white-space:nowrap;width:110px}
+.q{width:70px}.r{width:90px}.btn{border:0;border-radius:9px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--gold);color:var(--ink)}
+.btn.d{background:var(--ink);color:#fff}.btn.x{background:none;color:#b3392b;padding:4px 8px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.total{display:flex;justify-content:space-between;align-items:center;background:var(--gold);border-radius:10px;padding:12px 16px;margin-top:12px;font-size:20px;font-weight:700}
+.sz{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:10px}.sz textarea{height:110px}
+.hint{color:var(--mute);font-size:12px;margin:6px 0 0}
+details summary{cursor:pointer;font-weight:600}
+#setup{max-width:560px;margin:30px auto}#setup .logo2{width:300px;max-width:80%;display:block;margin:0 auto 6px}
+.plys{display:grid;gap:8px;margin-top:6px}.plys label{display:flex;gap:10px;align-items:center;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer;margin:0}
+.plys input{width:auto}.plys label:has(input:checked){border-color:var(--gold-d);background:#f3ede2;font-weight:600}
+.big{width:100%;margin-top:16px;padding:13px;font-size:16px}.ben li{margin:3px 0}
+#sheet{padding:26px}.sh-tag{text-align:center;color:var(--gold-d);font-style:italic;letter-spacing:.04em;margin:6px 0 10px}.sh-line{height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:6px 0 14px}.sh-title{text-align:center;font-size:20px;letter-spacing:.35em;font-weight:700;margin:0 0 12px}.sh-info{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;background:#f6f3ee;border-radius:10px;padding:12px 14px;margin-bottom:14px}#prev tbody tr:nth-child(even) td{background:#faf7f2}.sh-box{border-left:4px solid var(--gold);background:#faf7f2;padding:10px 14px;margin-top:14px;border-radius:0 8px 8px 0}.sh-foot{text-align:center;margin-top:20px;padding-top:10px;border-top:1px solid var(--line);color:var(--gold-d);font-style:italic}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.hrow .btn{padding:6px 11px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#prev td,#prev th{border:1px solid var(--line);text-align:center}#prev th{background:var(--ink)}#prev table{min-width:0}#prev tr.tot td{background:var(--gold);font-weight:700;font-size:16px}
+@media print{#setup{display:none}body{background:#fff}.noprint,.btn.x,td.x,th.x{display:none!important}.card{border:0;padding:0}input,select{border:0;padding:2px;appearance:none;-webkit-appearance:none}.wrap{padding:0}}
+
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script></head><body><div class="wrap"><div id="setup" class="card"><img class="logo2" alt="Shivoy Interior"><h2 style="text-align:center;margin:6px 0 16px">New Estimate</h2>
+<div class="meta" style="grid-template-columns:1fr"><div><label>Client Name</label><input id="s_client" placeholder="e.g. Mr. Mayurbhai"></div><div><label>Date</label><input id="s_date" type="date"></div><div><label>Address</label><input id="s_contact" placeholder="Client address"></div></div>
+<label style="margin-top:16px">Select Plywood</label><div class="plys" id="plys"></div>
+<button class="btn d big" id="enter">Enter →</button><button class="btn big" id="ratesBtn" style="margin-top:8px">Saved Rates</button>
+<h3 style="margin:24px 0 4px">Previous Estimates</h3><div id="hist"></div></div>
+<div id="est" hidden>
+<div class="noprint" style="margin-bottom:10px"><button class="btn" id="back">← All Estimates</button> <button class="btn" id="ratesBtn2">Saved Rates</button></div>
+<div class="card"><div class="head"><img class="logo" src="/logo.png" alt="Shivoy Interior"></div>
+<div class="meta"><div><label>Client Name</label><input id="client" placeholder="e.g. Mr. Mayurbhai"></div><div><label>Date</label><input id="date" type="date"></div><div><label>Plywood</label><select id="plysel"></select></div><div><label>Address</label><input id="contact" placeholder="Your address & mobile"></div></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Plywood (8 * 4)</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="plyRows"></tbody></table></div><div class="bar noprint"><select id="plyAdd" style="width:auto;min-width:200px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Adhesive</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="adRows"></tbody></table></div><div class="bar noprint"><select id="adCo" style="width:auto;min-width:170px"></select><select id="adPr" style="width:auto;min-width:150px"></select><select id="adSz" style="width:auto;min-width:110px"></select><button class="btn" id="adBtn" disabled>+ Add</button></div><p class="hint noprint">Pick company → product → size, then press + Add. Total = Qty × Rate.</p></div>
+<div class="card"><h3 style="margin:0 0 10px">Aluminium Pipe</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Fit</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="alpRows"></tbody></table></div><div class="bar noprint"><select id="alpSz" style="width:auto;min-width:200px"></select><select id="alpFit" style="width:auto"><option value="12" selected>12 FIT</option><option value="16">16 FIT</option></select><button class="btn" id="alpBtn" disabled>+ Add</button></div><p class="hint noprint">Pick size and fit (12 FIT by default), then press + Add. Sizes you type are remembered in the dropdown. Total = Qty × Rate.</p></div>
+<div class="card"><h3 style="margin:0 0 10px">H.D.F / M.D.F</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="hdfRows"></tbody></table></div><div class="bar noprint"><select id="hdfAdd" style="width:auto;min-width:200px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 4px">Wood Joint & Patti</h3><h4 style="margin:12px 0 6px">Wood Joint</h4><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="jointRows"></tbody></table></div><div class="bar noprint"><select id="jointAdd" style="width:auto;min-width:220px"></select></div><h4 style="margin:12px 0 6px">Wood Patti</h4><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="pattiRows"></tbody></table></div><div class="bar noprint"><select id="pattiAdd" style="width:auto;min-width:220px"></select></div><p class="hint">Total = Qty × Rate. For 1.5 * 1/2, 1 * 1/2, 1.5 * 3/4 and 1 * 3/4 the height defaults to (MIX): enter the quantity in FIT (100, 200…). Pick a height (7.5, 8, 8.5) to order those as pieces instead.</p></div>
+<div class="card"><h3 style="margin:0 0 10px">S.S L.P Screw</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lpRows"></tbody></table></div><div class="bar noprint"><select id="lpAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Self Drilling Screw</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="sdRows"></tbody></table></div><div class="bar noprint"><select id="sdAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Cotted Khilli</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="ckRows"></tbody></table></div><div class="bar noprint"><select id="ckAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Grinder Paper</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="gpRows"></tbody></table></div><div class="bar noprint"><select id="gpAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Wall Plug</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="wpRows"></tbody></table></div><div class="bar noprint"><select id="wpAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">L-Corner</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lcRows"></tbody></table></div><div class="bar noprint"><select id="lcAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Other Items</h3><div class="tw"><table><thead><tr><th>No.</th><th>Category</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="bar noprint"><button class="btn" id="add">+ Add Item</button><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
+<div class="total"><span>TOTAL</span><span id="grand">₹0</span></div>
+<label style="margin-top:14px">Notes (shown at bottom)</label><textarea id="notes" rows="4"></textarea></div>
+<div class="card"><h3 style="margin:0 0 6px" id="plyTitle"></h3><ul class="ben" id="ben"></ul></div>
+<div class="card noprint"><details><summary>⚙ Manage sizes per category</summary><p class="hint">One size per line, like <b>8 * 4</b>. These appear in each category's Size dropdown. Plywood, HDF, MDF, ACP & Flexible are priced per sq.ft: Qty × Rate × (length × width).</p><div class="sz" id="sizes"></div></details></div>
+</div></div>
+<div id="rates" class="wrap" hidden><div class="bar noprint" style="margin:0 0 10px"><button class="btn" id="rback">← Back</button><button class="btn d" id="rsave" hidden>Save all rates from this estimate</button></div><div class="card"><h3 style="margin:0 0 4px">Saved Rates</h3><p class="hint" style="margin:0 0 10px">Rates fill in automatically when you add an item. The first rate you type for an item is saved here. Edit a rate here to change it for future estimates; old estimates stay as they are.</p><input id="rfilter" placeholder="Search saved rates…"><div id="rlist"></div><h4 style="margin:16px 0 6px">Add / update a rate</h4><div class="meta"><input id="rn" placeholder="Item e.g. 12MM DARNEL PLY"><input id="rs" placeholder="Size e.g. 8 * 4"><input id="rr" type="number" min="0" step="any" placeholder="Rate"><button class="btn d" id="radd">Save rate</button></div></div></div>
+<div id="prev" class="wrap" hidden><div class="noprint bar" style="margin:0 0 10px"><button class="btn" id="pback">← Back to edit</button><button class="btn d" id="pdfBtn">⬇ Download PDF</button><button class="btn" id="pply">Another plywood →</button><button class="btn" id="pprint">🖨 Print</button><span id="pmsg" class="hint" style="align-self:center"></span></div><div class="card sheet" id="sheet"></div></div>
+<script>
+(async()=>{const api=(m,u,b)=>fetch(u,{method:m,headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).catch(()=>{});
+const BOOT=await fetch("/api/bootstrap").then(r=>r.json()).catch(()=>({estimates:[],rates:{},config:null}));let ESTS=BOOT.estimates||[];
+
+const CATS=["A.C.P","Flexible","Mix Products"];
+const AREA=["Plywood","H.D.F","M.D.F","A.C.P","Flexible"];
+const DEF={Plywood:["8 * 4","8 * 3","7 * 4","6 * 4"],"H.D.F":["8 * 4"],"M.D.F":["8 * 4"],"A.C.P":["8 * 4"],Flexible:["8 * 4"],"Wood Joint & Patti":["3 * 1.5 * 7.5 FIT","2.5 * 3/4 * 7.5 FIT"],"S.S L.P Screw":["75 * 10","60 * 10","38 * 8","32 * 8","25 * 6","19 * 6","16 * 6"],"Self Drilling Screw":["75 * 10","60 * 10","38 * 8","25 * 7","19 * 7"],"Cotted Khilli":["14 * 1 3/4","17 * 1 1/4","19 * 3/4"],"Mix Products":[]};
+let inEst=false;let S={rows:[],sizes:JSON.parse(JSON.stringify(DEF)),client:"",date:"",contact:"",notes:"TRANSPORTATION WILL BE EXTRA"};
+if(BOOT.config)S=Object.assign(S,BOOT.config);
+const $=id=>document.getElementById(id);
+const save=()=>saveHist();
+const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+function calc(r){const q=+r.qty||0,rt=+r.rate||0;if(AREA.includes(r.cat)){const m=(r.size||"").match(/\d+(\.\d+)?/g);if(m&&m.length>=2)return q*rt*(+m[0])*(+m[1]);}return q*rt}
+function totals(){let g=0;S.rows.forEach((r,i)=>{const t=calc(r);g+=t;const c=$("t"+i);if(c)c.textContent=inr(t)});
+ [["plyRows","pt"],["hdfRows","ht"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=calc({cat:"H.D.F",size:r.size||"8 * 4",qty:r.qty,rate:r.rate});g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
+ [["adRows","ad"],["alpRows","al"],["jointRows","jt"],["pattiRows","wt"],["lpRows","lp"],["sdRows","sd"],["ckRows","ck"],["gpRows","gp"],["wpRows","wp"],["lcRows","lc"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
+ S.grand=g;$("grand").textContent=inr(g)}
+function sizeOpts(r){const l=(S.sizes[r.cat]||[]).slice();if(r.size&&!l.includes(r.size))l.push(r.size);return '<option value="">—</option>'+l.map(s=>`<option ${s===r.size?"selected":""}>${s}</option>`).join("")}
+function render(){
+ $("rows").innerHTML=S.rows.map((r,i)=>`<tr><td class="n">${i+1}</td>
+ <td><select data-i="${i}" data-k="cat">${CATS.map(c=>`<option ${c===r.cat?"selected":""}>${c}</option>`).join("")}</select></td>
+ <td><input data-i="${i}" data-k="name" value="${(r.name||"").replace(/"/g,"&quot;")}" placeholder="${r.cat==="Plywood"?"e.g. 19MM DARNEL PLY":"Item name"}"></td>
+ <td><select data-i="${i}" data-k="size">${sizeOpts(r)}</select></td>
+ <td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${r.qty}"></td>
+ <td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${r.rate}"></td>
+ <td class="t" id="t${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");
+ $("sizes").innerHTML=CATS.map(c=>`<div><label>${c}</label><textarea data-sz="${c}">${(S.sizes[c]||[]).join("\n")}</textarea></div>`).join("");
+ totals()}
+$("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName==="SELECT")return;S.rows[i][k]=e.target.value;totals();save()});
+$("rows").addEventListener("change",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName!=="SELECT")return;let v=e.target.value;
+ if(k==="size"&&v==="__new"){v=(prompt("Enter size (e.g. 8 * 4)")||"").trim();if(v){S.sizes[S.rows[i].cat]=(S.sizes[S.rows[i].cat]||[]).concat(v)}}
+ S.rows[i][k]=v;if(k==="cat")S.rows[i].size="";save();render()});
+$("rows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.rows.splice(d,1);save();render()}});
+$("sizes").addEventListener("input",e=>{const c=e.target.dataset.sz;S.sizes[c]=e.target.value.split("\n").map(s=>s.trim()).filter(Boolean);save()});
+$("sizes").addEventListener("change",render);
+$("add").onclick=()=>{const last=S.rows[S.rows.length-1];S.rows.push({cat:last?last.cat:"Mix Products",name:"",size:"",qty:1,rate:""});save();render()};
+$("clear").onclick=()=>{const b=$("clear");if(b.dataset.arm){b.dataset.arm="";b.textContent="Clear all";S.rows=[];save();render()}else{b.dataset.arm=1;b.textContent="Click again to clear";setTimeout(()=>{b.dataset.arm="";b.textContent="Clear all"},3000)}};
+
+["client","date","contact","notes"].forEach(k=>{$(k).value=S[k]||"";$(k).oninput=()=>{S[k]=$(k).value;save()}});
+if(!$("date").value){$("date").value=new Date().toISOString().slice(0,10);S.date=$("date").value}
+render();
+const PLY={
+"DARNEL 18MM":{label:"18MM DARNEL PLY",benefits:["15 Layer material","Red & white material","100% calibrated","Termite proof","Zero gapping"]},
+"DARNEL 19MM":{label:"19MM DARNEL PLY",benefits:["15 Layer material","Red & white material","100% calibrated","Termite proof","Zero gapping"]},
+"DARKLION 18MM":{label:"18MM DARKLION PLY",benefits:["Add Darklion 18MM benefit 1","Add Darklion 18MM benefit 2"]},
+"ADITYA BIRLA MR 18MM":{label:"18MM ADITYA BIRLA MR PLY",benefits:["Add Aditya Birla MR benefit 1","Add Aditya Birla MR benefit 2"]},
+"ADITYA BIRLA BWP 18MM":{label:"18MM ADITYA BIRLA BWP PLY",benefits:["Add Aditya Birla BWP benefit 1","Add Aditya Birla BWP benefit 2"]}};
+if(!PLY[S.ply])S.ply="DARNEL 18MM";let newPly=S.ply;
+document.querySelector("#setup .logo2").src=document.querySelector(".head .logo").src;
+$("plys").innerHTML=Object.keys(PLY).map(k=>`<label><input type="radio" name="ply" value="${k}" ${k===S.ply?"checked":""}>${k}</label>`).join("");
+$("plysel").innerHTML=Object.keys(PLY).map(k=>`<option ${k===S.ply?"selected":""}>${k}</option>`).join("");
+["client","date","contact"].forEach(k=>{$("s_"+k).value=k==="date"?new Date().toISOString().slice(0,10):""});
+if(!$("s_date").value)$("s_date").value=new Date().toISOString().slice(0,10);
+function showBen(){const p=PLY[S.ply];$("plyTitle").textContent=p.label+" – Details & Benefits";$("ben").innerHTML=p.benefits.map(b=>`<li>${b}</li>`).join("")}
+function setPly(k){const old=S.ply;if(k===old){$("plysel").value=k;return}
+ S.plyRates=S.plyRates||{};const m={};(S.plyRows||[]).forEach(r=>{m[r.t]=r.rate});S.plyRates[old]=m;
+ S.ply=k;if(S.plyRows&&S.plyRows[0])S.plyRows[0].t=(k.match(/(\d+)MM/)||[])[1]||"18";
+ const nm=S.plyRates[k]||{};(S.plyRows||[]).forEach(r=>{r.rate=nm[r.t]!=null?nm[r.t]:""});
+ $("plysel").value=k;showBen();renderSecs();save()}
+document.querySelectorAll('input[name=ply]').forEach(r=>r.onchange=()=>{newPly=r.value});
+$("plysel").onchange=()=>setPly($("plysel").value);
+$("enter").onclick=()=>{if(!$("s_client").value.trim()){$("s_client").style.borderColor="#b3392b";$("s_client").placeholder="Please enter client name";$("s_client").focus();return}
+ $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{}});inEst=true;$("notes").value=S.notes;
+ S.client=$("s_client").value;S.date=$("s_date").value;S.contact=$("s_contact").value;
+ ["client","date","contact"].forEach(k=>$(k).value=S[k]);
+ const p=PLY[S.ply];const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.rows=[];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
+ $("setup").hidden=true;$("est").hidden=false;scrollTo(0,0)};
+$("back").onclick=()=>{inEst=false;["client","contact"].forEach(k=>$("s_"+k).value="");$("s_date").value=new Date().toISOString().slice(0,10);$("est").hidden=true;$("setup").hidden=false;renderHist();scrollTo(0,0)};
+showBen();
+const brand=()=>S.ply.replace(/\s*\d+MM$/,"");
+const SEC={plyRows:{pre:"pt",body:"plyRows",add:"plyAdd",opts:["9","6"],name:t=>t+"MM "+brand()+" PLY"},hdfRows:{pre:"ht",body:"hdfRows",add:"hdfAdd",opts:["H.D.F","M.D.F"].flatMap(kd=>["4","6","8","12","18","25"].map(t=>kd+"|"+t)),name:(t,r)=>t+"MM "+((r&&r.kind)||"H.D.F")}};
+function renderSecs(){S.plyRows=S.plyRows||[];S.hdfRows=S.hdfRows||[];
+ Object.keys(SEC).forEach(k=>{const c=SEC[k],hd=k==="hdfRows";
+  $(c.body).innerHTML=S[k].map((r,i)=>`<tr><td class="n">${i+1}</td><td><b>${c.name(r.t,r)}</b></td><td>${hd?`<select data-i="${i}" data-k="size">${["8 * 4","10 * 4"].map(s=>`<option ${s===(r.size||"8 * 4")?"selected":""}>${s}</option>`).join("")}</select>`:"8 * 4"}</td><td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${r.rate}"></td><td class="t" id="${c.pre}${i}"></td><td class="x">${r.fixed?"":`<button class="btn x" data-del="${i}">✕</button>`}</td></tr>`).join("");
+  const have=S[k].map(r=>hd?(r.kind||"H.D.F")+"|"+r.t:r.t),left=c.opts.filter(o=>!have.includes(o));
+  $(c.add).innerHTML=`<option value="">${hd?"+ Add H.D.F / M.D.F…":"+ Add ply thickness…"}</option>`+left.map(o=>{const[kd,t]=hd?o.split("|"):["",o];return `<option value="${o}">${t}MM${hd?" "+kd:""}</option>`}).join("");$(c.add).style.display=left.length?"":"none"});
+ totals()}
+Object.keys(SEC).forEach(k=>{const c=SEC[k],b=$(c.body);
+ b.addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null||e.target.tagName==="SELECT")return;S[k][i][e.target.dataset.k]=e.target.value;totals();save()});
+ b.addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null||e.target.tagName!=="SELECT")return;S[k][i].size=e.target.value;totals();save()});
+ b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderSecs()}});
+ $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;const p=v.split("|");S[k].push(p.length>1?{kind:p[0],t:p[1],size:"8 * 4",qty:1,rate:""}:{t:v,size:"8 * 4",qty:1,rate:""});const kn=x=>x.kind||"H.D.F";S[k].sort((a,b)=>k==="hdfRows"?(kn(a)>kn(b)?1:kn(a)<kn(b)?-1:a.t-b.t):b.t-a.t);save();renderSecs()}});
+renderSecs();
+const FIT=["1.5 * 1/2","1 * 1/2","1.5 * 3/4","1 * 3/4"],esc=s=>(s||"").replace(/"/g,"&quot;");
+const WJ={jointRows:{pre:"jt",add:"jointAdd",label:"WOOD JOINT",H:["7","7.5","8","8.7"],S:["3 * 1.5","3 * 1"]},pattiRows:{pre:"wt",add:"pattiAdd",label:"WOOD PATTI",H:["7.5","8","8.5"],S:["2.5 * 1/2","2 * 1/2","1.5 * 1/2","1 * 1/2","2.5 * 3/4","2 * 3/4","1.5 * 3/4","1 * 3/4"]}};
+function renderW(){Object.keys(WJ).forEach(k=>{const c=WJ[k],P=k==="pattiRows";S[k]=S[k]||[];
+ $(k).innerHTML=S[k].map((r,i)=>{const isF=P&&FIT.includes(r.s),fit=isF&&(r.h||"MIX")==="MIX",d=`data-i="${i}"`;
+  const nm=r.custom?`<input ${d} data-k="name" value="${esc(r.name)}" placeholder="Item name">`:`<b>${c.label}</b>`;
+  const sz=r.custom?`<input ${d} data-k="s" value="${esc(r.s)}" placeholder="Size">`:`${r.s}${fit?"":" *"} <select ${d} data-k="h" style="width:auto;display:inline-block;padding:4px">${(isF?["MIX",...c.H]:c.H).map(x=>`<option value="${x}" ${x===(r.h||(isF?"MIX":""))?"selected":""}>${x==="MIX"?"(MIX)":x}</option>`).join("")}</select>`;
+  return `<tr><td class="n">${i+1}</td><td>${nm}</td><td>${sz}</td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${r.qty}" placeholder="${fit?"FIT":"Qty"}">${fit?" <small>FIT</small>":""}</td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${r.rate}"></td><td class="t" id="${c.pre}${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");
+ $(c.add).innerHTML=`<option value="">+ Add ${P?"wood patti":"wood joint"}…</option>`+c.S.map(s=>`<option value="${s}">${s}${P&&FIT.includes(s)?" (MIX / FIT)":""}</option>`).join("")+'<option value="__c">+ Custom item…</option>'});
+ totals()}
+Object.keys(WJ).forEach(k=>{const c=WJ[k],b=$(k);
+ b.addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null||e.target.tagName==="SELECT")return;S[k][i][e.target.dataset.k]=e.target.value;totals();save()});
+ b.addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null||e.target.tagName!=="SELECT")return;S[k][i].h=e.target.value;save();renderW()});
+ b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderW()}});
+ $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;S[k].push(v==="__c"?{custom:1,name:"",s:"",qty:1,rate:""}:{s:v,h:k==="pattiRows"&&FIT.includes(v)?"MIX":"7.5",qty:1,rate:""});save();renderW()}});
+renderW();
+const SCR={lpRows:{pre:"lp",add:"lpAdd",label:"S.S L.P SCREW",S:["75 * 10","60 * 10","38 * 8","32 * 8","25 * 6","19 * 6","16 * 6"]},
+sdRows:{pre:"sd",add:"sdAdd",label:"SELF DRILLING SCREW",S:["75 * 10","60 * 10","38 * 8","25 * 7","19 * 7"]},
+ckRows:{pre:"ck",add:"ckAdd",label:"COTTED KHILLI",S:["14 * 1 3/4","14 * 1 1/4","17 * 1 1/4","17 * 1","17 * 3/4","19 * 3/4"]},
+gpRows:{pre:"gp",add:"gpAdd",label:"GRINDER PAPER",S:["36","60","80","120"]},
+wpRows:{pre:"wp",add:"wpAdd",label:"WALL PLUG",S:["50 * 12","50 * 10","35 * 10"]},
+lcRows:{pre:"lc",add:"lcAdd",label:"L-CORNER",S:["1 * 1","1.5 * 1.5","2 * 1"]}};
+function renderX(){Object.keys(SCR).forEach(k=>{const c=SCR[k];S[k]=S[k]||[];
+ const ix=r=>r.custom||r.ed||c.S.indexOf(r.s)<0?999:c.S.indexOf(r.s);S[k].sort((a,b)=>ix(a)-ix(b));
+ $(k).innerHTML=S[k].map((r,i)=>{const d=`data-i="${i}"`;
+  return `<tr><td class="n">${i+1}</td><td>${r.custom?`<input ${d} data-k="name" value="${esc(r.name)}" placeholder="Item name">`:`<b>${c.label}</b>`}</td><td>${r.custom||r.ed?`<input ${d} data-k="s" value="${esc(r.s)}" placeholder="Type size, e.g. 50 * 8">`:r.s}</td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${r.rate}"></td><td class="t" id="${c.pre}${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");
+ const have=S[k].filter(r=>!r.custom&&!r.ed).map(r=>r.s);
+ $(c.add).innerHTML='<option value="">Choose to add…</option>'+c.S.filter(s=>!have.includes(s)).map(s=>`<option value="${s}">${s}</option>`).join("")+'<option value="__s">+ Add size (type new size)</option><option value="__c">+ Custom item…</option>'});
+ totals()}
+Object.keys(SCR).forEach(k=>{const c=SCR[k],b=$(k);
+ b.addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null)return;S[k][i][e.target.dataset.k]=e.target.value;totals();save()});
+ b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderX()}});
+ $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;S[k].push(v==="__c"?{custom:1,name:"",s:"",qty:1,rate:""}:v==="__s"?{ed:1,s:"",qty:1,rate:""}:{s:v,qty:1,rate:""});save();renderX();if(v==="__s"){const l=$(k).lastElementChild.querySelector('input[data-k="s"]');if(l)l.focus()}}});
+renderX();
+const ADH={"BLUECOTE D3":{"D3 MAX":["60 KG","55 KG","25 KG","10 KG","5 KG"],"D3 GOLD":["60 KG","20 KG","5 KG"]},"ASTRAL":{"ZESTA D3":["60 KG","20 KG","10 KG","5 KG"]},"PIDILITE FEVICOL":{"HI-PER":["50 KG","10 KG","5 KG"]}};
+const opt=(ph,a)=>`<option value="">${ph}</option>`+a.map(x=>`<option>${x}</option>`).join("");
+function chkA(){$("adBtn").disabled=!($("adCo").value&&$("adPr").value&&$("adSz").value)}
+function fillA(lv){if(lv<=0)$("adCo").innerHTML=opt("Select company…",Object.keys(ADH));
+ if(lv<=1){const c=$("adCo").value;$("adPr").innerHTML=opt("Select product…",c?Object.keys(ADH[c]):[]);$("adPr").disabled=!c}
+ if(lv<=2){const c=$("adCo").value,p=$("adPr").value;$("adSz").innerHTML=opt("Select size…",c&&p?ADH[c][p]:[]);$("adSz").disabled=!(c&&p)}chkA()}
+$("adCo").onchange=()=>fillA(1);$("adPr").onchange=()=>fillA(2);$("adSz").onchange=chkA;
+$("adBtn").onclick=()=>{S.adRows=S.adRows||[];S.adRows.push({co:$("adCo").value,pr:$("adPr").value,s:$("adSz").value,qty:1,rate:""});save();$("adSz").value="";chkA();renderA()};
+function renderA(){S.adRows=S.adRows||[];
+ $("adRows").innerHTML=S.adRows.map((r,i)=>`<tr><td class="n">${i+1}</td><td><b>${r.co}</b> – ${r.pr}</td><td>${r.s}</td><td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${r.rate}"></td><td class="t" id="ad${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");totals()}
+$("adRows").addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null)return;S.adRows[i][e.target.dataset.k]=e.target.value;totals();save()});
+$("adRows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.adRows.splice(d,1);save();renderA()}});
+fillA(0);renderA();
+S.alpSizes=[...new Set(["2 * 1","2 * 1.5","3 * 1","4 * 1","3 * 3/4","4 * 3/4",...(S.alpSizes||[])])];S.alpRows=S.alpRows||[];
+function fillAlp(){$("alpSz").innerHTML='<option value="">Select pipe size…</option>'+S.alpSizes.map(s=>`<option>${s}</option>`).join("")+'<option value="__n">+ New size (type it)</option>'}
+$("alpSz").onchange=()=>{$("alpBtn").disabled=!$("alpSz").value};
+$("alpBtn").onclick=()=>{const v=$("alpSz").value;if(!v)return;S.alpRows.push(v==="__n"?{ed:1,s:"",fit:$("alpFit").value,qty:1,rate:""}:{s:v,fit:$("alpFit").value,qty:1,rate:""});save();renderAlp();if(v==="__n"){const l=$("alpRows").lastElementChild.querySelector('input[data-k="s"]');if(l)l.focus()}};
+function renderAlp(){S.alpRows=S.alpRows||[];
+ $("alpRows").innerHTML=S.alpRows.map((r,i)=>{const d=`data-i="${i}"`;return `<tr><td class="n">${i+1}</td><td><b>ALUMINIUM PIPE</b></td><td>${r.ed?`<input ${d} data-k="s" value="${esc(r.s)}" placeholder="Type size">`:r.s}</td><td><select ${d} data-k="fit" style="width:auto">${["12","16"].map(f=>`<option value="${f}" ${f===String(r.fit)?"selected":""}>${f} FIT</option>`).join("")}</select></td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${r.rate}"></td><td class="t" id="al${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");
+ fillAlp();$("alpBtn").disabled=true;totals()}
+$("alpRows").addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null||e.target.tagName==="SELECT")return;S.alpRows[i][e.target.dataset.k]=e.target.value;totals();save()});
+$("alpRows").addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null)return;const r=S.alpRows[i];
+ if(e.target.tagName==="SELECT"){r.fit=e.target.value;save()}
+ else if(e.target.dataset.k==="s"){const v=e.target.value.trim();r.s=v;if(v){r.ed=0;if(!S.alpSizes.includes(v))S.alpSizes.push(v)}save();renderAlp()}});
+$("alpRows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.alpRows.splice(d,1);save();renderAlp()}});
+renderAlp();
+
+const he=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const fd=s=>s?s.split("-").reverse().join("/"):"",num=n=>Math.round(n).toLocaleString("en-IN");
+function cellTxt(n){let s="";n.childNodes.forEach(c=>{if(c.nodeType===3)s+=c.textContent;else if(c.tagName==="INPUT")s+=" "+c.value+" ";else if(c.tagName==="SELECT")s+=" "+(c.options[c.selectedIndex]?c.options[c.selectedIndex].textContent:"")+" ";else s+=" "+cellTxt(c)+" "});return s.replace(/\s+/g," ").trim()}
+
+function rowInfo(tr){const td=[...tr.children],id=tr.parentNode.id;let name,size,qi,ri,ti;
+ if(id==="rows"){name=cellTxt(td[2])||cellTxt(td[1]);size=cellTxt(td[3]);qi=4;ri=5;ti=6}
+ else if(id==="alpRows"){name=cellTxt(td[1]);size=cellTxt(td[2])+" * "+cellTxt(td[3]);qi=4;ri=5;ti=6}
+ else{name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
+ return{name,size,qty:cellTxt(td[qi]),rate:cellTxt(td[ri]),tot:+cellTxt(td[ti]).replace(/[^\d]/g,"")||0,re:td[ri].querySelector("input"),key:(name+"|"+size).toUpperCase().replace(/\s+/g," ").trim()}}
+function collect(){const out=[];document.querySelectorAll("#est tbody tr").forEach(tr=>{if(tr.children.length<7)return;const i=rowInfo(tr);if(i.tot>0)out.push(i)});return out}
+function msg(t){$("pmsg").textContent=t}
+const W1=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"],W2=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+const two=n=>n<20?W1[n]:W2[Math.floor(n/10)]+(n%10?" "+W1[n%10]:""),three=n=>(n>99?W1[Math.floor(n/100)]+" Hundred"+(n%100?" ":""):"")+(n%100?two(n%100):"");
+function words(n){n=Math.round(n);if(!n)return"Zero";let s="";const cr=Math.floor(n/1e7),lk=Math.floor(n/1e5)%100,th=Math.floor(n/1e3)%100,r=n%1000;if(cr)s+=two(cr%100)+" Crore ";if(lk)s+=two(lk)+" Lakh ";if(th)s+=two(th)+" Thousand ";if(r)s+=three(r);return s.trim()}
+const TAG="The place where you get your dream interior";
+function showPrev(){const L=collect(),sum=L.reduce((a,r)=>a+r.tot,0),p=PLY[S.ply],lg=document.querySelector(".head .logo").src;
+ $("sheet").innerHTML=`<div class="head"><img class="logo" src="${lg}" alt=""></div><div class="sh-tag">${TAG}</div><div class="sh-line"></div><div class="sh-title">ESTIMATE</div>
+ <div class="sh-info"><div><b>Client:</b> ${he(S.client)}</div><div><b>Date:</b> ${fd(S.date)}</div><div><b>Address:</b> ${he(S.contact)||"-"}</div><div><b>Plywood:</b> ${he(S.ply)}</div></div>
+ <div class="tw"><table><thead><tr><th>NO.</th><th>ITEMS</th><th>SIZE</th><th>QTY.</th><th>RATE</th><th>TOTAL</th></tr></thead><tbody>${L.map((r,i)=>`<tr><td>${i+1}</td><td style="text-align:left"><b>${he(r.name)}</b></td><td>${he(r.size)}</td><td>${he(r.qty)}</td><td>${he(r.rate)}</td><td style="text-align:right">${num(r.tot)}</td></tr>`).join("")||'<tr><td colspan="6">No priced items yet – enter Qty and Rate on the previous page.</td></tr>'}<tr class="tot"><td colspan="5">TOTAL</td><td style="text-align:right">₹${num(sum)}</td></tr></tbody></table></div>
+ <p style="margin:12px 0 0"><b>Amount in words:</b> Rupees ${words(sum)} Only</p>
+ <div class="sh-box"><b>Terms &amp; Notes</b><div style="white-space:pre-line;margin-top:4px">${he(S.notes)||"-"}</div></div>
+ <div class="sh-box"><b>${he(p.label)} – Details &amp; Benefits</b><ul class="ben" style="margin:6px 0 0;padding-left:20px;list-style:none">${p.benefits.map(b=>`<li>✓ ${he(b)}</li>`).join("")}</ul></div>
+ <div class="sh-foot">Shivoy Interior – ${TAG}<br>Thank you for choosing us!</div>`;
+ msg("");$("est").hidden=true;$("prev").hidden=false;scrollTo(0,0)}
+async function makePdf(){const L=collect(),sum=L.reduce((a,r)=>a+r.tot,0),p=PLY[S.ply],{jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),G=[196,180,155],GD=[156,138,108],D=[43,40,35];
+ const lg=document.querySelector(".head .logo"),lw=62,lh=lw*lg.naturalHeight/lg.naturalWidth;doc.addImage(lg,"PNG",(210-lw)/2,9,lw,lh);let y=9+lh+5;
+ doc.setFont("helvetica","italic");doc.setFontSize(9.5);doc.setTextColor(...GD);doc.text(TAG,105,y,{align:"center"});y+=3.5;
+ doc.setDrawColor(...G);doc.setLineWidth(.8);doc.line(15,y,195,y);y+=8;
+ doc.setFont("helvetica","bold");doc.setFontSize(14);doc.setTextColor(...D);doc.text("E S T I M A T E",105,y,{align:"center"});y+=5;
+ doc.setFillColor(246,243,238);doc.roundedRect(10,y,190,17,2,2,"F");doc.setFontSize(9.5);
+ const kv=(k,v,x,yy)=>{doc.setFont("helvetica","bold");doc.text(k,x,yy);doc.setFont("helvetica","normal");doc.text(doc.splitTextToSize(String(v||"-"),x<100?70:62)[0],x+20,yy)};
+ kv("Client:",S.client,14,y+6.5);kv("Date:",fd(S.date),110,y+6.5);kv("Address:",S.contact,14,y+13);kv("Plywood:",S.ply,110,y+13);y+=21;
+ doc.autoTable({startY:y,head:[["NO.","ITEMS","SIZE","QTY.","RATE","TOTAL"]],body:L.map((r,i)=>[i+1,r.name,r.size,r.qty,r.rate,num(r.tot)]),foot:[[{content:"TOTAL",colSpan:5,styles:{halign:"center"}},"Rs. "+num(sum)]],theme:"grid",showFoot:"lastPage",styles:{fontSize:8.5,cellPadding:2,halign:"center",lineColor:[225,218,204],lineWidth:.2,textColor:40},headStyles:{fillColor:D,textColor:255,fontStyle:"bold"},alternateRowStyles:{fillColor:[250,247,241]},footStyles:{fillColor:G,textColor:20,fontStyle:"bold",fontSize:11},columnStyles:{0:{cellWidth:12},1:{halign:"left",fontStyle:"bold"},5:{halign:"right",cellWidth:30}},margin:{left:10,right:10,bottom:20}});
+ let y2=doc.lastAutoTable.finalY+7;doc.setTextColor(...D);doc.setFont("helvetica","bold");doc.setFontSize(9.5);
+ const wl=doc.splitTextToSize("Amount in words: Rupees "+words(sum)+" Only",190);if(y2+wl.length*5>275){doc.addPage();y2=15}doc.text(wl,10,y2);y2+=wl.length*5+4;
+ const box=(t,ls)=>{const hh=9+ls.length*5;if(y2+hh>278){doc.addPage();y2=15}doc.setFillColor(250,247,241);doc.rect(10,y2,190,hh,"F");doc.setFillColor(...G);doc.rect(10,y2,1.6,hh,"F");doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(...D);doc.text(t,15,y2+6);doc.setFont("helvetica","normal");doc.setFontSize(9);ls.forEach((x,i)=>doc.text(x,15,y2+12+i*5));y2+=hh+5};
+ box("Terms & Notes",doc.splitTextToSize(S.notes||"-",180));box(p.label+" - Details & Benefits",p.benefits.map(b=>"- "+b));
+ const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("helvetica","italic");doc.setFontSize(8);doc.setTextColor(...GD);doc.text("Shivoy Interior - "+TAG,105,290,{align:"center"});doc.text("Page "+i+" of "+n,200,290,{align:"right"})}
+ return doc.output("blob")}
+/* ---- saved rates ---- */
+const RK="shivoy_rates";let RATES=BOOT.rates||{};
+const saveRates=()=>api("PUT","/api/rates",RATES);
+const nk=(n,s)=>(n+"|"+s).toUpperCase().replace(/\s+/g," ").trim();
+let applying=false,skipFill=false;
+function applyRates(){if(applying||skipFill||!inEst)return;applying=true;try{document.querySelectorAll("#est tbody tr").forEach(tr=>{if(tr.children.length<7)return;const i=rowInfo(tr);if(!i.re||i.re.value!==""||!i.name)return;const x=RATES[i.key];if(x){i.re.value=x.r;i.re.dispatchEvent(new Event("input",{bubbles:true}))}})}finally{applying=false}}
+new MutationObserver(()=>{if(!applying)setTimeout(applyRates,0)}).observe($("est"),{childList:true,subtree:true});
+$("est").addEventListener("change",e=>{const el=e.target;if(el.tagName!=="INPUT"||el.dataset.k!=="rate")return;const tr=el.closest("tr");if(!tr||tr.parentNode.tagName!=="TBODY")return;const i=rowInfo(tr),v=+el.value;if(i.name&&v>0&&!(i.key in RATES)){RATES[i.key]={n:i.name,s:i.size,r:v};saveRates()}});
+let rfrom="setup";
+function renderRates(){const q=($("rfilter").value||"").toUpperCase(),l=Object.entries(RATES).filter(([k])=>k.includes(q)).sort((a,b)=>a[0]<b[0]?-1:1);
+ $("rlist").innerHTML=l.length?l.map(([k,x])=>`<div class="hrow"><div><b>${he(x.n)}</b> <small style="color:var(--mute)">${he(x.s)}</small></div><div style="display:flex;gap:6px;align-items:center"><input type="number" min="0" step="any" style="width:90px" data-rk="${he(k)}" value="${x.r}"><button class="btn x" data-rdel="${he(k)}">✕</button></div></div>`).join(""):'<p class="hint">No saved rates yet. Type a rate on an estimate and it will appear here.</p>'}
+function openRates(from){rfrom=from;$("setup").hidden=true;$("est").hidden=true;$("rates").hidden=false;$("rsave").hidden=from!=="est";renderRates();scrollTo(0,0)}
+$("ratesBtn").onclick=()=>openRates("setup");$("ratesBtn2").onclick=()=>openRates("est");$("rfilter").oninput=renderRates;
+$("rback").onclick=()=>{$("rates").hidden=true;if(rfrom==="est"){$("est").hidden=false;setTimeout(applyRates,0)}else $("setup").hidden=false};
+$("rlist").addEventListener("change",e=>{const k=e.target.dataset.rk,v=+e.target.value;if(k&&RATES[k]){if(v>0)RATES[k].r=v;else delete RATES[k];saveRates();renderRates()}});
+$("rlist").addEventListener("click",e=>{const k=e.target.dataset.rdel,b=e.target;if(!k)return;if(b.dataset.arm){delete RATES[k];saveRates();renderRates()}else{b.dataset.arm=1;b.textContent="Delete?";setTimeout(()=>{b.dataset.arm="";b.textContent="✕"},3000)}});
+$("radd").onclick=()=>{const n=$("rn").value.trim().toUpperCase(),s=$("rs").value.trim(),r=+$("rr").value;if(!n||!(r>0))return;RATES[nk(n,s)]={n,s,r};saveRates();$("rn").value=$("rs").value=$("rr").value="";renderRates()};
+$("rsave").onclick=()=>{let c=0;document.querySelectorAll("#est tbody tr").forEach(tr=>{if(tr.children.length<7)return;const i=rowInfo(tr),v=+(i.re&&i.re.value);if(i.name&&v>0){RATES[i.key]={n:i.name,s:i.size,r:v};c++}});saveRates();renderRates();$("rsave").textContent="Saved "+c+" rates ✓"};
+$("print").onclick=showPrev;
+$("pback").onclick=()=>{$("prev").hidden=true;$("est").hidden=false};
+$("pprint").onclick=()=>{try{window.print()}catch(e){msg("Print not available here – use Download PDF.")}};
+$("pdfBtn").onclick=async()=>{try{msg("Preparing PDF…");const blob=await makePdf(),dl=window.claude&&claude.use?await claude.use("downloads"):null;
+ if(!dl){const fn="Estimate-"+((S.client||"client")+" "+S.ply).replace(/[^\w\- ]/g,"").trim()+".pdf",a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();msg("Downloaded ✓");return}
+ await dl.save({filename:"Estimate-"+((S.client||"client")+" "+S.ply).replace(/[^\w\- ]/g,"").trim()+".pdf",data:blob});msg("Saved ✓")}
+ catch(e){msg(e&&e.code==="declined"?"Cancelled":"Could not create PDF: "+((e&&e.message)||e))}};
+
+const HK="shivoy_hist";
+function getHist(){return ESTS}
+let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const copy=JSON.parse(JSON.stringify(S));ESTS=[copy,...ESTS.filter(x=>x.id!==S.id)];clearTimeout(hT);hT=setTimeout(()=>{api("PUT","/api/estimates/"+copy.id,copy);api("PUT","/api/config",{sizes:S.sizes,alpSizes:S.alpSizes})},700)}
+function renderHist(){const l=getHist();$("hist").innerHTML=l.length?l.map(x=>`<div class="hrow"><div><b>${he(x.client)}</b><br><small style="color:var(--mute)">${fd(x.date)} · ${he(x.ply)} · ₹${num(x.grand||0)}</small></div><div><button class="btn" data-open="${x.id}">Edit</button> <button class="btn x" data-hdel="${x.id}">✕</button></div></div>`).join(""):'<p class="hint">No saved estimates yet. They appear here automatically.</p>'}
+$("hist").addEventListener("click",e=>{const o=e.target.dataset.open,d=e.target.dataset.hdel,b=e.target;
+ if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
+  ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
+ else if(d){if(b.dataset.arm){ESTS=ESTS.filter(z=>z.id!==d);api("DELETE","/api/estimates/"+d);renderHist()}else{b.dataset.arm=1;b.textContent="Delete?";setTimeout(()=>{b.dataset.arm="";b.textContent="✕"},3000)}}});
+$("pply").onclick=()=>{$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0);$("plysel").focus()};
+renderHist();
+})();
+</script></body></html>
