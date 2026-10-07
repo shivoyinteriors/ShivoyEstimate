@@ -68,12 +68,22 @@ async function setSetting(key, value) {
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => { console.error(e); res.status(500).json({ error: "server error" }); });
 app.get("/api/health", (req, res) => res.json({ ok: true, mongo: !!estCol }));
 app.get("/api/bootstrap", wrap(async (req, res) => {
-  res.json({ estimates: await listEstimates(), rates: (await getSetting("rates")) || {}, config: await getSetting("config") });
+  res.json({
+    estimates: await listEstimates(),
+    rates: (await getSetting("rates")) || {},
+    config: await getSetting("config"),
+    products: (await getSetting("products")) || []
+  });
 }));
 app.put("/api/estimates/:id", wrap(async (req, res) => { await saveEstimate(req.params.id, req.body); res.json({ ok: true }); }));
 app.delete("/api/estimates/:id", wrap(async (req, res) => { await deleteEstimate(req.params.id); res.json({ ok: true }); }));
 app.put("/api/rates", wrap(async (req, res) => { await setSetting("rates", req.body); res.json({ ok: true }); }));
 app.put("/api/config", wrap(async (req, res) => { await setSetting("config", req.body); res.json({ ok: true }); }));
+app.put("/api/products", wrap(async (req, res) => {
+  if (!Array.isArray(req.body)) return res.status(400).json({ error: "products must be an array" });
+  await setSetting("products", req.body);
+  res.json({ ok: true });
+}));
 
 const port = process.env.PORT || 3000;
 init().then(() => app.listen(port, () => console.log("Running on port " + port)))
