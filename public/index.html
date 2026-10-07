@@ -52,12 +52,11 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card"><h3 style="margin:0 0 10px">Wall Plug</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="wpRows"></tbody></table></div><div class="bar noprint"><select id="wpAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">L-Corner</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lcRows"></tbody></table></div><div class="bar noprint"><select id="lcAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">Other Items</h3><div class="tw"><table><thead><tr><th>No.</th><th>Category</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="rows"></tbody></table></div>
-<div class="bar noprint"><button class="btn" id="add">+ Add Item</button><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
+<div class="bar noprint"><button class="btn" id="add">+ Add Item</button><select id="savedItemSelect" style="width:auto;min-width:220px"><option value="">Saved items…</option></select><button class="btn" id="addSavedItem" disabled>+ Add Saved Item</button><span id="savedItemStatus" class="hint" style="align-self:center"></span><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
 <div class="total"><span>TOTAL</span><span id="grand">₹0</span></div>
 <label style="margin-top:14px">Notes (shown at bottom)</label><textarea id="notes" rows="4"></textarea></div>
 <div class="card"><h3 style="margin:0 0 6px" id="plyTitle"></h3><ul class="ben" id="ben"></ul></div>
 <div class="card noprint"><details><summary>⚙ Manage sizes per category</summary><p class="hint">One size per line, like <b>8 * 4</b>. These appear in each category's Size dropdown. Plywood, HDF, MDF, ACP & Flexible are priced per sq.ft: Qty × Rate × (length × width).</p><div class="sz" id="sizes"></div></details></div>
-<div class="card"><h3 style="margin:0 0 10px">New Products</h3><p class="hint">Add a product once and it will be available on future estimates. Enter quantity and rate for each estimate.</p><div class="bar noprint"><input id="newProductName" placeholder="New product name" style="max-width:320px"><button class="btn" id="addNewProduct">+ Add Product</button><span id="productStatus" class="hint" style="align-self:center"></span></div><div class="tw"><table id="newProductTable"><thead><tr><th>No.</th><th style="text-align:left">Product</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th></tr></thead><tbody id="newProductRows"></tbody></table></div></div>
 </div></div>
 <div id="rates" class="wrap" hidden><div class="bar noprint" style="margin:0 0 10px"><button class="btn" id="rback">← Back</button><button class="btn d" id="rsave" hidden>Save all rates from this estimate</button></div><div class="card"><h3 style="margin:0 0 4px">Saved Rates</h3><p class="hint" style="margin:0 0 10px">Rates fill in automatically when you add an item. The first rate you type for an item is saved here. Edit a rate here to change it for future estimates; old estimates stay as they are.</p><input id="rfilter" placeholder="Search saved rates…"><div id="rlist"></div><h4 style="margin:16px 0 6px">Add / update a rate</h4><div class="meta"><input id="rn" placeholder="Item e.g. 12MM DARNEL PLY"><input id="rs" placeholder="Size e.g. 8 * 4"><input id="rr" type="number" min="0" step="any" placeholder="Rate"><button class="btn d" id="radd">Save rate</button></div></div></div>
 <div id="prev" class="wrap" hidden><div class="noprint bar" style="margin:0 0 10px"><button class="btn" id="pback">← Back to edit</button><button class="btn d" id="pdfBtn">⬇ Download PDF</button><button class="btn" id="pply">Another plywood →</button><button class="btn" id="pprint">🖨 Print</button><span id="pmsg" class="hint" style="align-self:center"></span></div><div class="card sheet" id="sheet"></div></div>
@@ -72,11 +71,11 @@ const DEF={Plywood:["8 * 4","8 * 3","7 * 4","6 * 4"],"H.D.F":["8 * 4"],"M.D.F":[
 let inEst=false;let S={rows:[],sizes:JSON.parse(JSON.stringify(DEF)),client:"",date:"",contact:"",notes:"TRANSPORTATION WILL BE EXTRA"};
 if(BOOT.config)S=Object.assign(S,BOOT.config);
 const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const save=()=>saveHist();
 const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 function calc(r){const q=+r.qty||0,rt=+r.rate||0;if(AREA.includes(r.cat)){const m=(r.size||"").match(/\d+(\.\d+)?/g);if(m&&m.length>=2)return q*rt*(+m[0])*(+m[1]);}return q*rt}
 function totals(){let g=0;S.rows.forEach((r,i)=>{const t=calc(r);g+=t;const c=$("t"+i);if(c)c.textContent=inr(t)});
- (S.customProducts||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$("np"+i);if(c)c.textContent=inr(t)});
  [["plyRows","pt"],["hdfRows","ht"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=calc({cat:"H.D.F",size:r.size||"8 * 4",qty:r.qty,rate:r.rate});g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
  [["adRows","ad"],["alpRows","al"],["jointRows","jt"],["pattiRows","wt"],["lpRows","lp"],["sdRows","sd"],["ckRows","ck"],["gpRows","gp"],["wpRows","wp"],["lcRows","lc"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
  S.grand=g;$("grand").textContent=inr(g)}
@@ -84,18 +83,17 @@ function sizeOpts(r){const l=(S.sizes[r.cat]||[]).slice();if(r.size&&!l.includes
 function render(){
  $("rows").innerHTML=S.rows.map((r,i)=>`<tr><td class="n">${i+1}</td>
  <td><select data-i="${i}" data-k="cat">${CATS.map(c=>`<option ${c===r.cat?"selected":""}>${c}</option>`).join("")}</select></td>
- <td><input data-i="${i}" data-k="name" value="${(r.name||"").replace(/"/g,"&quot;")}" placeholder="${r.cat==="Plywood"?"e.g. 19MM DARNEL PLY":"Item name"}"></td>
- <td><select data-i="${i}" data-k="size">${sizeOpts(r)}</select></td>
+ <td><input data-i="${i}" data-k="name" value="${esc(r.name||"")}" placeholder="${r.cat==="Plywood"?"e.g. 19MM DARNEL PLY":"Item name"}"></td>
+ <td><input data-i="${i}" data-k="size" value="${esc(r.size||"")}" placeholder="Size"></td>
  <td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${r.qty}"></td>
  <td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${r.rate}"></td>
- <td class="t" id="t${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");
+ <td class="t" id="t${i}"></td><td class="x"><button class="btn x" data-save-item="${i}" title="Save item for future estimates">Save</button> <button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");
  $("sizes").innerHTML=CATS.map(c=>`<div><label>${c}</label><textarea data-sz="${c}">${(S.sizes[c]||[]).join("\n")}</textarea></div>`).join("");
  totals()}
 $("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName==="SELECT")return;S.rows[i][k]=e.target.value;totals();save()});
 $("rows").addEventListener("change",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName!=="SELECT")return;let v=e.target.value;
- if(k==="size"&&v==="__new"){v=(prompt("Enter size (e.g. 8 * 4)")||"").trim();if(v){S.sizes[S.rows[i].cat]=(S.sizes[S.rows[i].cat]||[]).concat(v)}}
  S.rows[i][k]=v;if(k==="cat")S.rows[i].size="";save();render()});
-$("rows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.rows.splice(d,1);save();render()}});
+$("rows").addEventListener("click",async e=>{const d=e.target.dataset.del,si=e.target.dataset.saveItem;if(d!=null){S.rows.splice(d,1);save();render()}else if(si!=null){await saveItemForLater(+si)}});
 $("sizes").addEventListener("input",e=>{const c=e.target.dataset.sz;S.sizes[c]=e.target.value.split("\n").map(s=>s.trim()).filter(Boolean);save()});
 $("sizes").addEventListener("change",render);
 $("add").onclick=()=>{const last=S.rows[S.rows.length-1];S.rows.push({cat:last?last.cat:"Mix Products",name:"",size:"",qty:1,rate:""});save();render()};
@@ -125,11 +123,11 @@ function setPly(k){const old=S.ply;if(k===old){$("plysel").value=k;return}
 document.querySelectorAll('input[name=ply]').forEach(r=>r.onchange=()=>{newPly=r.value});
 $("plysel").onchange=()=>setPly($("plysel").value);
 $("enter").onclick=()=>{if(!$("s_client").value.trim()){$("s_client").style.borderColor="#b3392b";$("s_client").placeholder="Please enter client name";$("s_client").focus();return}
- $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},customProducts:productCatalog.map(p=>({id:p.id,name:p.name,qty:"",rate:""}))});inEst=true;$("notes").value=S.notes;
+ $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{}});inEst=true;$("notes").value=S.notes;
  S.client=$("s_client").value;S.date=$("s_date").value;S.contact=$("s_contact").value;
  ["client","date","contact"].forEach(k=>$(k).value=S[k]);
  const p=PLY[S.ply];const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.rows=[];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
- renderNewProducts();$("setup").hidden=true;$("est").hidden=false;scrollTo(0,0)};
+ $("setup").hidden=true;$("est").hidden=false;scrollTo(0,0)};
 $("back").onclick=()=>{inEst=false;["client","contact"].forEach(k=>$("s_"+k).value="");$("s_date").value=new Date().toISOString().slice(0,10);$("est").hidden=true;$("setup").hidden=false;renderHist();scrollTo(0,0)};
 showBen();
 const brand=()=>S.ply.replace(/\s*\d+MM$/,"");
@@ -146,7 +144,7 @@ Object.keys(SEC).forEach(k=>{const c=SEC[k],b=$(c.body);
  b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderSecs()}});
  $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;const p=v.split("|");S[k].push(p.length>1?{kind:p[0],t:p[1],size:"8 * 4",qty:1,rate:""}:{t:v,size:"8 * 4",qty:1,rate:""});const kn=x=>x.kind||"H.D.F";S[k].sort((a,b)=>k==="hdfRows"?(kn(a)>kn(b)?1:kn(a)<kn(b)?-1:a.t-b.t):b.t-a.t);save();renderSecs()}});
 renderSecs();
-const FIT=["1.5 * 1/2","1 * 1/2","1.5 * 3/4","1 * 3/4"],esc=s=>(s||"").replace(/"/g,"&quot;");
+const FIT=["1.5 * 1/2","1 * 1/2","1.5 * 3/4","1 * 3/4"];
 const WJ={jointRows:{pre:"jt",add:"jointAdd",label:"WOOD JOINT",H:["7","7.5","8","8.7"],S:["3 * 1.5","3 * 1"]},pattiRows:{pre:"wt",add:"pattiAdd",label:"WOOD PATTI",H:["7.5","8","8.5"],S:["2.5 * 1/2","2 * 1/2","1.5 * 1/2","1 * 1/2","2.5 * 3/4","2 * 3/4","1.5 * 3/4","1 * 3/4"]}};
 function renderW(){Object.keys(WJ).forEach(k=>{const c=WJ[k],P=k==="pattiRows";S[k]=S[k]||[];
  $(k).innerHTML=S[k].map((r,i)=>{const isF=P&&FIT.includes(r.s),fit=isF&&(r.h||"MIX")==="MIX",d=`data-i="${i}"`;
@@ -206,26 +204,42 @@ $("alpRows").addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null
 $("alpRows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.alpRows.splice(d,1);save();renderAlp()}});
 renderAlp();
 
-function syncProductRows(){S.customProducts=Array.isArray(S.customProducts)?S.customProducts:[];const existing=new Set(S.customProducts.map(p=>p.id));productCatalog.forEach(p=>{if(!existing.has(p.id))S.customProducts.push({id:p.id,name:p.name,qty:"",rate:""})})}
-function renderNewProducts(){syncProductRows();$("newProductRows").innerHTML=S.customProducts.map((p,i)=>`<tr><td class="n">${i+1}</td><td style="text-align:left"><b>${he(p.name)}</b></td><td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${esc(p.qty)}"></td><td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${esc(p.rate)}"></td><td class="t" id="np${i}"></td></tr>`).join("");totals()}
-$("newProductRows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;S.customProducts[i][k]=e.target.value;totals();save()});
-$("addNewProduct").onclick=async()=>{const name=$("newProductName").value.trim(),key=name.toLocaleLowerCase();if(!name){$("productStatus").textContent="Enter a product name.";return}if(productCatalog.some(p=>p.name.toLocaleLowerCase()===key)){$("productStatus").textContent="That product is already listed.";return}
- const next=[...productCatalog,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name}];$("addNewProduct").disabled=true;$("productStatus").textContent="Saving…";
- try{const response=await fetch("/api/products",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(next)});if(!response.ok)throw new Error(`Server returned ${response.status}`);productCatalog=next;syncProductRows();$("newProductName").value="";save();renderNewProducts();$("productStatus").textContent="Product saved."}
- catch(error){console.error("Could not save product:",error);$("productStatus").textContent="Could not save product. Please try again."}
- finally{$("addNewProduct").disabled=false}};
-
 const he=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const fd=s=>s?s.split("-").reverse().join("/"):"",num=n=>Math.round(n).toLocaleString("en-IN");
 function cellTxt(n){let s="";n.childNodes.forEach(c=>{if(c.nodeType===3)s+=c.textContent;else if(c.tagName==="INPUT")s+=" "+c.value+" ";else if(c.tagName==="SELECT")s+=" "+(c.options[c.selectedIndex]?c.options[c.selectedIndex].textContent:"")+" ";else s+=" "+cellTxt(c)+" "});return s.replace(/\s+/g," ").trim()}
-
+function renderSavedItems(){
+ $("savedItemSelect").innerHTML='<option value="">Saved items…</option>'+productCatalog.map(p=>`<option value="${he(p.id)}">${he(p.name)}${p.size?` · ${he(p.size)}`:""}${p.rate?` · ₹${he(p.rate)}`:""}</option>`).join("");
+ $("addSavedItem").disabled=productCatalog.length===0;
+}
+async function saveItemForLater(index){
+ const row=S.rows[index];
+ if(!row||!row.name.trim()){$("savedItemStatus").textContent="Enter an item name before saving.";return}
+ const name=row.name.trim(),size=(row.size||"").trim();
+ const item={id:row.catalogId||Date.now().toString(36)+Math.random().toString(36).slice(2,7),name,cat:CATS.includes(row.cat)?row.cat:"Mix Products",size,rate:String(row.rate||"")};
+ const next=productCatalog.filter(p=>p.id!==item.id);
+ next.push(item);
+ $("savedItemStatus").textContent="Saving item…";
+ try{
+  const response=await fetch("/api/products",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(next)});
+  if(!response.ok)throw new Error(`Server returned ${response.status}`);
+  productCatalog=next;row.catalogId=item.id;save();renderSavedItems();$("savedItemStatus").textContent="Saved for future estimates.";
+ }catch(error){console.error("Could not save item:",error);$("savedItemStatus").textContent="Could not save item. Please try again."}
+}
+function migrateLegacyProducts(){
+ if(!Array.isArray(S.customProducts))return;
+ S.rows=Array.isArray(S.rows)?S.rows:[];
+ S.customProducts.filter(Boolean).forEach(p=>S.rows.push({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:p.qty??"",rate:p.rate??"",catalogId:p.id}));
+ delete S.customProducts;
+}
+renderSavedItems();
+$("savedItemSelect").onchange=()=>$("addSavedItem").disabled=!$("savedItemSelect").value;
+$("addSavedItem").onclick=()=>{const p=productCatalog.find(x=>x.id===$("savedItemSelect").value);if(!p)return;S.rows.push({cat:CATS.includes(p.cat)?p.cat:"Mix Products",name:p.name,size:p.size||"",qty:1,rate:p.rate||"",catalogId:p.id});save();render();$("savedItemSelect").value="";$("addSavedItem").disabled=true;$("savedItemStatus").textContent=""};
 function rowInfo(tr){const td=[...tr.children],id=tr.parentNode.id;let name,size,qi,ri,ti;
- if(id==="newProductRows"){name=cellTxt(td[1]);size="";qi=2;ri=3;ti=4}
- else if(id==="rows"){name=cellTxt(td[2])||cellTxt(td[1]);size=cellTxt(td[3]);qi=4;ri=5;ti=6}
+ if(id==="rows"){name=cellTxt(td[2])||cellTxt(td[1]);size=cellTxt(td[3]);qi=4;ri=5;ti=6}
  else if(id==="alpRows"){name=cellTxt(td[1]);size=cellTxt(td[2])+" * "+cellTxt(td[3]);qi=4;ri=5;ti=6}
  else{name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  return{name,size,qty:cellTxt(td[qi]),rate:cellTxt(td[ri]),tot:+cellTxt(td[ti]).replace(/[^\d]/g,"")||0,re:td[ri].querySelector("input"),key:(name+"|"+size).toUpperCase().replace(/\s+/g," ").trim()}}
-function collect(){const out=[];document.querySelectorAll("#est tbody tr").forEach(tr=>{if(tr.parentNode.id!=="newProductRows"&&tr.children.length<7)return;const i=rowInfo(tr);if(i.tot>0)out.push(i)});return out}
+function collect(){const out=[];document.querySelectorAll("#est tbody tr").forEach(tr=>{if(tr.children.length<7)return;const i=rowInfo(tr);if(i.tot>0)out.push(i)});return out}
 function msg(t){$("pmsg").textContent=t}
 const W1=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"],W2=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
 const two=n=>n<20?W1[n]:W2[Math.floor(n/10)]+(n%10?" "+W1[n%10]:""),three=n=>(n>99?W1[Math.floor(n/100)]+" Hundred"+(n%100?" ":""):"")+(n%100?two(n%100):"");
@@ -285,8 +299,8 @@ function getHist(){return ESTS}
 let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const copy=JSON.parse(JSON.stringify(S));ESTS=[copy,...ESTS.filter(x=>x.id!==S.id)];clearTimeout(hT);hT=setTimeout(()=>{api("PUT","/api/estimates/"+copy.id,copy);api("PUT","/api/config",{sizes:S.sizes,alpSizes:S.alpSizes})},700)}
 function renderHist(){const l=getHist();$("hist").innerHTML=l.length?l.map(x=>`<div class="hrow"><div><b>${he(x.client)}</b><br><small style="color:var(--mute)">${fd(x.date)} · ${he(x.ply)} · ₹${num(x.grand||0)}</small></div><div><button class="btn" data-open="${x.id}">Edit</button> <button class="btn x" data-hdel="${x.id}">✕</button></div></div>`).join(""):'<p class="hint">No saved estimates yet. They appear here automatically.</p>'}
 $("hist").addEventListener("click",e=>{const o=e.target.dataset.open,d=e.target.dataset.hdel,b=e.target;
- if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
-  ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();renderNewProducts();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
+ if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));migrateLegacyProducts();if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
+  ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
  else if(d){if(b.dataset.arm){ESTS=ESTS.filter(z=>z.id!==d);api("DELETE","/api/estimates/"+d);renderHist()}else{b.dataset.arm=1;b.textContent="Delete?";setTimeout(()=>{b.dataset.arm="";b.textContent="✕"},3000)}}});
 $("pply").onclick=()=>{$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0);$("plysel").focus()};
 renderHist();
