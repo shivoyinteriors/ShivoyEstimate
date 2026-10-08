@@ -5,7 +5,7 @@
 .wrap{max-width:1050px;margin:0 auto;padding:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
 .head{display:block}
-.head .ico{width:70px}.head .logo{max-width:100%;width:340px;margin:0 auto;display:block}
+.head .ico{width:70px}.head .logo{width:56px;height:56px;object-fit:contain;margin:0;display:block}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:14px}
 label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);display:block;margin-bottom:3px}
 input,select,textarea{font:inherit;color:inherit;width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
@@ -21,7 +21,7 @@ td.n{width:34px;text-align:center;color:var(--mute)}td.t{text-align:right;font-w
 .sz{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:10px}.sz textarea{height:110px}
 .hint{color:var(--mute);font-size:12px;margin:6px 0 0}
 details summary{cursor:pointer;font-weight:600}
-#setup{max-width:560px;margin:30px auto}#setup .logo2{width:300px;max-width:80%;display:block;margin:0 auto 6px}
+#setup{max-width:560px;margin:30px auto}#setup .logo2{width:72px;height:72px;object-fit:contain;display:block;margin:0 auto 6px}
 .plys{display:grid;gap:8px;margin-top:6px}.plys label{display:flex;gap:10px;align-items:center;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer;margin:0}
 .plys input{width:auto}.plys label:has(input:checked){border-color:var(--gold-d);background:#f3ede2;font-weight:600}
 .big{width:100%;margin-top:16px;padding:13px;font-size:16px}.ben li{margin:3px 0}
@@ -51,8 +51,8 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card"><h3 style="margin:0 0 10px">Grinder Paper</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="gpRows"></tbody></table></div><div class="bar noprint"><select id="gpAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">Wall Plug</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="wpRows"></tbody></table></div><div class="bar noprint"><select id="wpAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">L-Corner</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lcRows"></tbody></table></div><div class="bar noprint"><select id="lcAdd" style="width:auto;min-width:220px"></select></div></div>
-<div class="card"><h3 style="margin:0 0 10px">Other Items</h3><div class="tw"><table><thead><tr><th>No.</th><th>Category</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="rows"></tbody></table></div>
-<div class="bar noprint"><button class="btn" id="add">+ Add Item</button><select id="savedItemSelect" style="width:auto;min-width:220px"><option value="">Saved items…</option></select><button class="btn" id="addSavedItem" disabled>+ Add Saved Item</button><span id="savedItemStatus" class="hint" style="align-self:center"></span><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
+<div class="card"><h3 style="margin:0 0 10px">Other Items</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="bar noprint"><button class="btn" id="add">+ Add Item</button><span id="savedItemStatus" class="hint" style="align-self:center"></span><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
 <div class="total"><span>TOTAL</span><span id="grand">₹0</span></div>
 <label style="margin-top:14px">Notes (shown at bottom)</label><textarea id="notes" rows="4"></textarea></div>
 <div class="card"><h3 style="margin:0 0 6px" id="plyTitle"></h3><ul class="ben" id="ben"></ul></div>
@@ -75,28 +75,30 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 const save=()=>saveHist();
 const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 function calc(r){const q=+r.qty||0,rt=+r.rate||0;if(AREA.includes(r.cat)){const m=(r.size||"").match(/\d+(\.\d+)?/g);if(m&&m.length>=2)return q*rt*(+m[0])*(+m[1]);}return q*rt}
+function sortOtherRows(){S.rows.sort((a,b)=>Number(String(b.qty??"").trim()!=="")-Number(String(a.qty??"").trim()!==""))}
 function totals(){let g=0;S.rows.forEach((r,i)=>{const t=calc(r);g+=t;const c=$("t"+i);if(c)c.textContent=inr(t)});
  [["plyRows","pt"],["hdfRows","ht"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=calc({cat:"H.D.F",size:r.size||"8 * 4",qty:r.qty,rate:r.rate});g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
  [["adRows","ad"],["alpRows","al"],["jointRows","jt"],["pattiRows","wt"],["lpRows","lp"],["sdRows","sd"],["ckRows","ck"],["gpRows","gp"],["wpRows","wp"],["lcRows","lc"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
  S.grand=g;$("grand").textContent=inr(g)}
-function sizeOpts(r){const l=(S.sizes[r.cat]||[]).slice();if(r.size&&!l.includes(r.size))l.push(r.size);return '<option value="">—</option>'+l.map(s=>`<option ${s===r.size?"selected":""}>${s}</option>`).join("")}
 function render(){
  $("rows").innerHTML=S.rows.map((r,i)=>`<tr><td class="n">${i+1}</td>
- <td><select data-i="${i}" data-k="cat">${CATS.map(c=>`<option ${c===r.cat?"selected":""}>${c}</option>`).join("")}</select></td>
- <td><input data-i="${i}" data-k="name" value="${esc(r.name||"")}" placeholder="${r.cat==="Plywood"?"e.g. 19MM DARNEL PLY":"Item name"}"></td>
+ <td><input data-i="${i}" data-k="name" value="${esc(r.name||"")}" placeholder="Item name"></td>
  <td><input data-i="${i}" data-k="size" value="${esc(r.size||"")}" placeholder="Size"></td>
- <td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${r.qty}"></td>
- <td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${r.rate}"></td>
- <td class="t" id="t${i}"></td><td class="x"><button class="btn x" data-save-item="${i}" title="Save item for future estimates">Save</button> <button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");
+ <td><input class="q" type="number" min="0" step="any" data-i="${i}" data-k="qty" value="${esc(r.qty)}"></td>
+ <td><input class="r" type="number" min="0" step="any" data-i="${i}" data-k="rate" value="${esc(r.rate)}"></td>
+ <td class="t" id="t${i}"></td><td class="x"><button class="btn x" data-save-item="${i}" title="Save or update this item for future estimates">Save</button> <button class="btn x" data-del="${i}">✕</button></td></tr>`).join("");
  $("sizes").innerHTML=CATS.map(c=>`<div><label>${c}</label><textarea data-sz="${c}">${(S.sizes[c]||[]).join("\n")}</textarea></div>`).join("");
  totals()}
-$("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName==="SELECT")return;S.rows[i][k]=e.target.value;totals();save()});
-$("rows").addEventListener("change",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||e.target.tagName!=="SELECT")return;let v=e.target.value;
- S.rows[i][k]=v;if(k==="cat")S.rows[i].size="";save();render()});
+$("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;S.rows[i][k]=e.target.value;totals();save()});
 $("rows").addEventListener("click",async e=>{const d=e.target.dataset.del,si=e.target.dataset.saveItem;if(d!=null){S.rows.splice(d,1);save();render()}else if(si!=null){await saveItemForLater(+si)}});
+$("est").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.tagName!=="INPUT"||e.target.dataset.k!=="qty")return;e.preventDefault();
+ const active=e.target,rowIndex=Number(active.dataset.i),rowBody=active.closest("tbody"),rowArray=rowBody&&rowBody.id==="rows"?S.rows:null,current=rowArray?rowArray[rowIndex]:null;
+ if(rowArray){sortOtherRows();render();save();const index=S.rows.indexOf(current),next=[...$("rows").querySelectorAll('input[data-k="qty"]')][index+1];if(next){next.focus();return}}
+ const fields=[...$("est").querySelectorAll('input[data-k="qty"]')],position=fields.findIndex(field=>field===active),next=fields[position+1]||fields[0];if(next)next.focus()
+});
 $("sizes").addEventListener("input",e=>{const c=e.target.dataset.sz;S.sizes[c]=e.target.value.split("\n").map(s=>s.trim()).filter(Boolean);save()});
 $("sizes").addEventListener("change",render);
-$("add").onclick=()=>{const last=S.rows[S.rows.length-1];S.rows.push({cat:last?last.cat:"Mix Products",name:"",size:"",qty:1,rate:""});save();render()};
+$("add").onclick=()=>{const last=S.rows[S.rows.length-1];S.rows.push({cat:last?last.cat:"Mix Products",name:"",size:"",qty:"",rate:""});save();render()};
 $("clear").onclick=()=>{const b=$("clear");if(b.dataset.arm){b.dataset.arm="";b.textContent="Clear all";S.rows=[];save();render()}else{b.dataset.arm=1;b.textContent="Click again to clear";setTimeout(()=>{b.dataset.arm="";b.textContent="Clear all"},3000)}};
 
 ["client","date","contact","notes"].forEach(k=>{$(k).value=S[k]||"";$(k).oninput=()=>{S[k]=$(k).value;save()}});
@@ -123,10 +125,10 @@ function setPly(k){const old=S.ply;if(k===old){$("plysel").value=k;return}
 document.querySelectorAll('input[name=ply]').forEach(r=>r.onchange=()=>{newPly=r.value});
 $("plysel").onchange=()=>setPly($("plysel").value);
 $("enter").onclick=()=>{if(!$("s_client").value.trim()){$("s_client").style.borderColor="#b3392b";$("s_client").placeholder="Please enter client name";$("s_client").focus();return}
- $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{}});inEst=true;$("notes").value=S.notes;
+ $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},rows:productCatalog.map(p=>({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:"",rate:p.rate||"",catalogId:p.id}))});inEst=true;$("notes").value=S.notes;
  S.client=$("s_client").value;S.date=$("s_date").value;S.contact=$("s_contact").value;
  ["client","date","contact"].forEach(k=>$(k).value=S[k]);
- const p=PLY[S.ply];const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.rows=[];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
+ const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
  $("setup").hidden=true;$("est").hidden=false;scrollTo(0,0)};
 $("back").onclick=()=>{inEst=false;["client","contact"].forEach(k=>$("s_"+k).value="");$("s_date").value=new Date().toISOString().slice(0,10);$("est").hidden=true;$("setup").hidden=false;renderHist();scrollTo(0,0)};
 showBen();
@@ -207,22 +209,19 @@ renderAlp();
 const he=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const fd=s=>s?s.split("-").reverse().join("/"):"",num=n=>Math.round(n).toLocaleString("en-IN");
 function cellTxt(n){let s="";n.childNodes.forEach(c=>{if(c.nodeType===3)s+=c.textContent;else if(c.tagName==="INPUT")s+=" "+c.value+" ";else if(c.tagName==="SELECT")s+=" "+(c.options[c.selectedIndex]?c.options[c.selectedIndex].textContent:"")+" ";else s+=" "+cellTxt(c)+" "});return s.replace(/\s+/g," ").trim()}
-function renderSavedItems(){
- $("savedItemSelect").innerHTML='<option value="">Saved items…</option>'+productCatalog.map(p=>`<option value="${he(p.id)}">${he(p.name)}${p.size?` · ${he(p.size)}`:""}${p.rate?` · ₹${he(p.rate)}`:""}</option>`).join("");
- $("addSavedItem").disabled=productCatalog.length===0;
-}
 async function saveItemForLater(index){
  const row=S.rows[index];
- if(!row||!row.name.trim()){$("savedItemStatus").textContent="Enter an item name before saving.";return}
- const name=row.name.trim(),size=(row.size||"").trim();
- const item={id:row.catalogId||Date.now().toString(36)+Math.random().toString(36).slice(2,7),name,cat:CATS.includes(row.cat)?row.cat:"Mix Products",size,rate:String(row.rate||"")};
+ if(!row||!String(row.name||"").trim()){$("savedItemStatus").textContent="Enter an item name before saving.";return}
+ const name=String(row.name).trim(),size=String(row.size||"").trim();
+ const existing=row.catalogId?productCatalog.find(p=>p.id===row.catalogId):productCatalog.find(p=>p.name.trim().toLocaleLowerCase()===name.toLocaleLowerCase()&&String(p.size||"").trim()===size);
+ const item={id:existing?existing.id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name,cat:"Mix Products",size,rate:String(row.rate||"")};
  const next=productCatalog.filter(p=>p.id!==item.id);
  next.push(item);
  $("savedItemStatus").textContent="Saving item…";
  try{
   const response=await fetch("/api/products",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(next)});
   if(!response.ok)throw new Error(`Server returned ${response.status}`);
-  productCatalog=next;row.catalogId=item.id;save();renderSavedItems();$("savedItemStatus").textContent="Saved for future estimates.";
+  productCatalog=next;row.catalogId=item.id;row.cat="Mix Products";save();$("savedItemStatus").textContent="Saved for future estimates.";
  }catch(error){console.error("Could not save item:",error);$("savedItemStatus").textContent="Could not save item. Please try again."}
 }
 function migrateLegacyProducts(){
@@ -231,11 +230,17 @@ function migrateLegacyProducts(){
  S.customProducts.filter(Boolean).forEach(p=>S.rows.push({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:p.qty??"",rate:p.rate??"",catalogId:p.id}));
  delete S.customProducts;
 }
-renderSavedItems();
-$("savedItemSelect").onchange=()=>$("addSavedItem").disabled=!$("savedItemSelect").value;
-$("addSavedItem").onclick=()=>{const p=productCatalog.find(x=>x.id===$("savedItemSelect").value);if(!p)return;S.rows.push({cat:CATS.includes(p.cat)?p.cat:"Mix Products",name:p.name,size:p.size||"",qty:1,rate:p.rate||"",catalogId:p.id});save();render();$("savedItemSelect").value="";$("addSavedItem").disabled=true;$("savedItemStatus").textContent=""};
+function syncSavedProducts(){
+ S.rows=Array.isArray(S.rows)?S.rows:[];
+ productCatalog.forEach(p=>{
+  const match=S.rows.find(r=>r.catalogId===p.id||(!r.catalogId&&String(r.name||"").trim().toLocaleLowerCase()===p.name.trim().toLocaleLowerCase()&&String(r.size||"").trim()===String(p.size||"").trim()));
+  if(match){match.catalogId=match.catalogId||p.id;return}
+  S.rows.push({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:"",rate:p.rate||"",catalogId:p.id});
+ });
+ sortOtherRows();
+}
 function rowInfo(tr){const td=[...tr.children],id=tr.parentNode.id;let name,size,qi,ri,ti;
- if(id==="rows"){name=cellTxt(td[2])||cellTxt(td[1]);size=cellTxt(td[3]);qi=4;ri=5;ti=6}
+ if(id==="rows"){name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  else if(id==="alpRows"){name=cellTxt(td[1]);size=cellTxt(td[2])+" * "+cellTxt(td[3]);qi=4;ri=5;ti=6}
  else{name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  return{name,size,qty:cellTxt(td[qi]),rate:cellTxt(td[ri]),tot:+cellTxt(td[ti]).replace(/[^\d]/g,"")||0,re:td[ri].querySelector("input"),key:(name+"|"+size).toUpperCase().replace(/\s+/g," ").trim()}}
@@ -299,7 +304,7 @@ function getHist(){return ESTS}
 let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const copy=JSON.parse(JSON.stringify(S));ESTS=[copy,...ESTS.filter(x=>x.id!==S.id)];clearTimeout(hT);hT=setTimeout(()=>{api("PUT","/api/estimates/"+copy.id,copy);api("PUT","/api/config",{sizes:S.sizes,alpSizes:S.alpSizes})},700)}
 function renderHist(){const l=getHist();$("hist").innerHTML=l.length?l.map(x=>`<div class="hrow"><div><b>${he(x.client)}</b><br><small style="color:var(--mute)">${fd(x.date)} · ${he(x.ply)} · ₹${num(x.grand||0)}</small></div><div><button class="btn" data-open="${x.id}">Edit</button> <button class="btn x" data-hdel="${x.id}">✕</button></div></div>`).join(""):'<p class="hint">No saved estimates yet. They appear here automatically.</p>'}
 $("hist").addEventListener("click",e=>{const o=e.target.dataset.open,d=e.target.dataset.hdel,b=e.target;
- if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));migrateLegacyProducts();if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
+ if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));migrateLegacyProducts();syncSavedProducts();if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
   ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
  else if(d){if(b.dataset.arm){ESTS=ESTS.filter(z=>z.id!==d);api("DELETE","/api/estimates/"+d);renderHist()}else{b.dataset.arm=1;b.textContent="Delete?";setTimeout(()=>{b.dataset.arm="";b.textContent="✕"},3000)}}});
 $("pply").onclick=()=>{$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0);$("plysel").focus()};
