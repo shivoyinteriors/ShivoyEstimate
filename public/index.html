@@ -45,7 +45,7 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card"><h3 style="margin:0 0 10px">Aluminium Pipe</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Fit</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="alpRows"></tbody></table></div><div class="bar noprint"><select id="alpSz" style="width:auto;min-width:200px"></select><select id="alpFit" style="width:auto"><option value="12" selected>12 FIT</option><option value="16">16 FIT</option></select><button class="btn" id="alpBtn" disabled>+ Add</button></div><p class="hint noprint">Pick size and fit (12 FIT by default), then press + Add. Sizes you type are remembered in the dropdown. Total = Qty × Rate.</p></div>
 <div class="card"><h3 style="margin:0 0 10px">H.D.F / M.D.F</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="hdfRows"></tbody></table></div><div class="bar noprint"><select id="hdfAdd" style="width:auto;min-width:200px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 4px">Wood Joint & Patti</h3><h4 style="margin:12px 0 6px">Wood Joint</h4><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="jointRows"></tbody></table></div><div class="bar noprint"><select id="jointAdd" style="width:auto;min-width:220px"></select></div><h4 style="margin:12px 0 6px">Wood Patti</h4><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="pattiRows"></tbody></table></div><div class="bar noprint"><select id="pattiAdd" style="width:auto;min-width:220px"></select></div><p class="hint">Total = Qty × Rate. For 1.5 * 1/2, 1 * 1/2, 1.5 * 3/4 and 1 * 3/4 the height defaults to (MIX): enter the quantity in FIT (100, 200…). Pick a height (7.5, 8, 8.5) to order those as pieces instead.</p></div>
-<div class="card"><h3 style="margin:0 0 10px">S.S L.P Screw</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lpRows"></tbody></table></div><div class="bar noprint"><select id="lpAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">S.S Screw</h3><div class="tw"><table><thead><tr><th>No.</th><th>Company</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lpRows"></tbody></table></div><div class="bar noprint"><select id="lpAdd" style="width:auto;min-width:220px"></select></div><p class="hint">Choose L.P or Skidex per row. Rates are saved separately for each company and size.</p></div>
 <div class="card"><h3 style="margin:0 0 10px">Self Drilling Screw</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="sdRows"></tbody></table></div><div class="bar noprint"><select id="sdAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">Cotted Khilli</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="ckRows"></tbody></table></div><div class="bar noprint"><select id="ckAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">Grinder Paper</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="gpRows"></tbody></table></div><div class="bar noprint"><select id="gpAdd" style="width:auto;min-width:220px"></select></div></div>
@@ -72,6 +72,7 @@ let inEst=false;let S={rows:[],sizes:JSON.parse(JSON.stringify(DEF)),client:"",d
 if(BOOT.config)S=Object.assign(S,BOOT.config);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const screwSizeOrder=(a,b)=>{const aa=String(a).match(/\d+(?:\.\d+)?/g)||[],bb=String(b).match(/\d+(?:\.\d+)?/g)||[];for(let i=0;i<Math.max(aa.length,bb.length);i++){const d=(+bb[i]||0)-(+aa[i]||0);if(d)return d}return String(a).localeCompare(String(b),undefined,{numeric:true})};
 const save=()=>saveHist();
 const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 function calc(r){const q=+r.qty||0,rt=+r.rate||0;if(AREA.includes(r.cat)){const m=(r.size||"").match(/\d+(\.\d+)?/g);if(m&&m.length>=2)return q*rt*(+m[0])*(+m[1]);}return q*rt}
@@ -90,6 +91,7 @@ function render(){
  $("sizes").innerHTML=CATS.map(c=>`<div><label>${c}</label><textarea data-sz="${c}">${(S.sizes[c]||[]).join("\n")}</textarea></div>`).join("");
  totals()}
 $("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;S.rows[i][k]=e.target.value;totals();save()});
+$("rows").addEventListener("change",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||k!=="size")return;if(String(S.rows[i].name||"").trim()&&String(S.rows[i].size||"").trim())saveItemForLater(+i)});
 $("rows").addEventListener("click",async e=>{const d=e.target.dataset.del,si=e.target.dataset.saveItem;if(d!=null){S.rows.splice(d,1);save();render()}else if(si!=null){await saveItemForLater(+si)}});
 $("est").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.tagName!=="INPUT"||e.target.dataset.k!=="qty")return;e.preventDefault();
  const active=e.target,rowIndex=Number(active.dataset.i),rowBody=active.closest("tbody"),rowArray=rowBody&&rowBody.id==="rows"?S.rows:null,current=rowArray?rowArray[rowIndex]:null;
@@ -125,7 +127,7 @@ function setPly(k){const old=S.ply;if(k===old){$("plysel").value=k;return}
 document.querySelectorAll('input[name=ply]').forEach(r=>r.onchange=()=>{newPly=r.value});
 $("plysel").onchange=()=>setPly($("plysel").value);
 $("enter").onclick=()=>{if(!$("s_client").value.trim()){$("s_client").style.borderColor="#b3392b";$("s_client").placeholder="Please enter client name";$("s_client").focus();return}
- $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},rows:productCatalog.map(p=>({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:"",rate:p.rate||"",catalogId:p.id}))});inEst=true;$("notes").value=S.notes;
+ $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes,screwSizes:S.screwSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},rows:productCatalog.map(p=>({cat:"Mix Products",name:p.name||"",size:p.size||"",qty:"",rate:p.rate||"",catalogId:p.id}))});inEst=true;$("notes").value=S.notes;
  S.client=$("s_client").value;S.date=$("s_date").value;S.contact=$("s_contact").value;
  ["client","date","contact"].forEach(k=>$(k).value=S[k]);
  const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
@@ -161,23 +163,28 @@ Object.keys(WJ).forEach(k=>{const c=WJ[k],b=$(k);
  b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderW()}});
  $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;S[k].push(v==="__c"?{custom:1,name:"",s:"",qty:1,rate:""}:{s:v,h:k==="pattiRows"&&FIT.includes(v)?"MIX":"7.5",qty:1,rate:""});save();renderW()}});
 renderW();
-const SCR={lpRows:{pre:"lp",add:"lpAdd",label:"S.S L.P SCREW",S:["75 * 10","60 * 10","38 * 8","32 * 8","25 * 6","19 * 6","16 * 6"]},
-sdRows:{pre:"sd",add:"sdAdd",label:"SELF DRILLING SCREW",S:["75 * 10","60 * 10","38 * 8","25 * 7","19 * 7"]},
+const SCR={lpRows:{pre:"lp",add:"lpAdd",label:"S.S SCREW",S:["100 * 10","75 * 10","75 * 8","60 * 10","60 * 8","50 * 10","50 * 8","38 * 10","38 * 8","32 * 8","25 * 7","25 * 6","19 * 7","19 * 6","16 * 6"],companies:["L.P","Skidex"]},
+sdRows:{pre:"sd",add:"sdAdd",label:"SELF DRILLING SCREW",S:["100 * 10","75 * 10","75 * 8","60 * 10","60 * 8","50 * 10","50 * 8","38 * 10","38 * 8","25 * 7","25 * 6","19 * 7","19 * 6"]},
 ckRows:{pre:"ck",add:"ckAdd",label:"COTTED KHILLI",S:["14 * 1 3/4","14 * 1 1/4","17 * 1 1/4","17 * 1","17 * 3/4","19 * 3/4"]},
 gpRows:{pre:"gp",add:"gpAdd",label:"GRINDER PAPER",S:["36","60","80","120"]},
 wpRows:{pre:"wp",add:"wpAdd",label:"WALL PLUG",S:["50 * 12","50 * 10","35 * 10"]},
 lcRows:{pre:"lc",add:"lcAdd",label:"L-CORNER",S:["1 * 1","1.5 * 1.5","2 * 1"]}};
-function renderX(){Object.keys(SCR).forEach(k=>{const c=SCR[k];S[k]=S[k]||[];
+function renderX(){Object.keys(SCR).forEach(k=>{const c=SCR[k];S[k]=S[k]||[];S.screwSizes=S.screwSizes||{};
+ c.S=[...new Set([...c.S,...(S.screwSizes[k]||[])])].sort(screwSizeOrder);
+ S[k].forEach(r=>{if(k==="lpRows"&&!r.company)r.company="L.P"});
  const ix=r=>r.custom||r.ed||c.S.indexOf(r.s)<0?999:c.S.indexOf(r.s);S[k].sort((a,b)=>ix(a)-ix(b));
  $(k).innerHTML=S[k].map((r,i)=>{const d=`data-i="${i}"`;
-  return `<tr><td class="n">${i+1}</td><td>${r.custom?`<input ${d} data-k="name" value="${esc(r.name)}" placeholder="Item name">`:`<b>${c.label}</b>`}</td><td>${r.custom||r.ed?`<input ${d} data-k="s" value="${esc(r.s)}" placeholder="Type size, e.g. 50 * 8">`:r.s}</td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${r.rate}"></td><td class="t" id="${c.pre}${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");
- const have=S[k].filter(r=>!r.custom&&!r.ed).map(r=>r.s);
- $(c.add).innerHTML='<option value="">Choose to add…</option>'+c.S.filter(s=>!have.includes(s)).map(s=>`<option value="${s}">${s}</option>`).join("")+'<option value="__s">+ Add size (type new size)</option><option value="__c">+ Custom item…</option>'});
+  const item=k==="lpRows"?`<select ${d} data-k="company">${c.companies.map(x=>`<option ${x===(r.company||"L.P")?"selected":""}>${x}</option>`).join("")}</select>`:r.custom?`<input ${d} data-k="name" value="${esc(r.name)}" placeholder="Item name">`:`<b>${c.label}</b>`;
+  return `<tr><td class="n">${i+1}</td><td>${item}</td><td>${r.custom||r.ed?`<input ${d} data-k="s" value="${esc(r.s)}" placeholder="Type size, e.g. 50 * 8">`:r.s}</td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${r.qty}"></td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${r.rate}"></td><td class="t" id="${c.pre}${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");
+ const have=S[k].filter(r=>!r.custom&&!r.ed).map(r=>k==="lpRows"?`${r.company||"L.P"}|${r.s}`:r.s);
+ const choices=k==="lpRows"?c.S.flatMap(s=>c.companies.filter(company=>!have.includes(`${company}|${s}`)).map(company=>`<option value="${company}|${s}">${s} — ${company}</option>`)):c.S.filter(s=>!have.includes(s)).map(s=>`<option value="${s}">${s}</option>`);
+ $(c.add).innerHTML='<option value="">Choose to add…</option>'+choices.join("")+'<option value="__s">+ Add size (type new size)</option><option value="__c">+ Custom item…</option>'});
  totals()}
 Object.keys(SCR).forEach(k=>{const c=SCR[k],b=$(k);
  b.addEventListener("input",e=>{const i=e.target.dataset.i;if(i==null)return;S[k][i][e.target.dataset.k]=e.target.value;totals();save()});
+ b.addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null)return;const row=S[k][i];if(e.target.dataset.k==="company"){row.company=e.target.value;const saved=RATES[nk(`S.S ${row.company} SCREW`,row.s)];row.rate=saved?saved.r:"";save();renderX();return}if(e.target.dataset.k==="s"){const size=String(e.target.value||"").trim();row.s=size;row.ed=0;if(size){S.screwSizes=S.screwSizes||{};S.screwSizes[k]=[...new Set([...(S.screwSizes[k]||[]),size])].sort(screwSizeOrder)}save();renderX()}});
  b.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S[k].splice(d,1);save();renderX()}});
- $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;S[k].push(v==="__c"?{custom:1,name:"",s:"",qty:1,rate:""}:v==="__s"?{ed:1,s:"",qty:1,rate:""}:{s:v,qty:1,rate:""});save();renderX();if(v==="__s"){const l=$(k).lastElementChild.querySelector('input[data-k="s"]');if(l)l.focus()}}});
+ $(c.add).onchange=e=>{const v=e.target.value;if(!v)return;const variant=k==="lpRows"&&v.includes("|")?v.split("|"):null;S[k].push(variant?{company:variant[0],s:variant.slice(1).join("|"),qty:1,rate:""}:v==="__c"?{custom:1,name:"",s:"",qty:1,rate:""}:v==="__s"?{ed:1,s:"",qty:1,rate:"",...(k==="lpRows"?{company:"L.P"}:{})}:{s:v,qty:1,rate:"",...(k==="lpRows"?{company:"L.P"}:{})});save();renderX();if(v==="__s"){const l=$(k).lastElementChild.querySelector('input[data-k="s"]');if(l)l.focus()}}});
 renderX();
 const ADH={"BLUECOTE D3":{"D3 MAX":["60 KG","55 KG","25 KG","10 KG","5 KG"],"D3 GOLD":["60 KG","20 KG","5 KG"]},"ASTRAL":{"ZESTA D3":["60 KG","20 KG","10 KG","5 KG"]},"PIDILITE FEVICOL":{"HI-PER":["50 KG","10 KG","5 KG"]}};
 const opt=(ph,a)=>`<option value="">${ph}</option>`+a.map(x=>`<option>${x}</option>`).join("");
@@ -213,7 +220,7 @@ async function saveItemForLater(index){
  const row=S.rows[index];
  if(!row||!String(row.name||"").trim()){$("savedItemStatus").textContent="Enter an item name before saving.";return}
  const name=String(row.name).trim(),size=String(row.size||"").trim();
- const existing=row.catalogId?productCatalog.find(p=>p.id===row.catalogId):productCatalog.find(p=>p.name.trim().toLocaleLowerCase()===name.toLocaleLowerCase()&&String(p.size||"").trim()===size);
+ const existing=productCatalog.find(p=>String(p.name||"").trim().toLocaleLowerCase()===name.toLocaleLowerCase()&&String(p.size||"").trim()===size);
  const item={id:existing?existing.id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name,cat:"Mix Products",size,rate:String(row.rate||"")};
  const next=productCatalog.filter(p=>p.id!==item.id);
  next.push(item);
@@ -241,6 +248,7 @@ function syncSavedProducts(){
 }
 function rowInfo(tr){const td=[...tr.children],id=tr.parentNode.id;let name,size,qi,ri,ti;
  if(id==="rows"){name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
+ else if(id==="lpRows"){name="S.S "+cellTxt(td[1])+" SCREW";size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  else if(id==="alpRows"){name=cellTxt(td[1]);size=cellTxt(td[2])+" * "+cellTxt(td[3]);qi=4;ri=5;ti=6}
  else{name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  return{name,size,qty:cellTxt(td[qi]),rate:cellTxt(td[ri]),tot:+cellTxt(td[ti]).replace(/[^\d]/g,"")||0,re:td[ri].querySelector("input"),key:(name+"|"+size).toUpperCase().replace(/\s+/g," ").trim()}}
@@ -301,7 +309,7 @@ $("pdfBtn").onclick=async()=>{try{msg("Preparing PDF…");const blob=await makeP
 
 const HK="shivoy_hist";
 function getHist(){return ESTS}
-let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const copy=JSON.parse(JSON.stringify(S));ESTS=[copy,...ESTS.filter(x=>x.id!==S.id)];clearTimeout(hT);hT=setTimeout(()=>{api("PUT","/api/estimates/"+copy.id,copy);api("PUT","/api/config",{sizes:S.sizes,alpSizes:S.alpSizes})},700)}
+let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const copy=JSON.parse(JSON.stringify(S));ESTS=[copy,...ESTS.filter(x=>x.id!==S.id)];clearTimeout(hT);hT=setTimeout(()=>{api("PUT","/api/estimates/"+copy.id,copy);api("PUT","/api/config",{sizes:S.sizes,alpSizes:S.alpSizes,screwSizes:S.screwSizes})},700)}
 function renderHist(){const l=getHist();$("hist").innerHTML=l.length?l.map(x=>`<div class="hrow"><div><b>${he(x.client)}</b><br><small style="color:var(--mute)">${fd(x.date)} · ${he(x.ply)} · ₹${num(x.grand||0)}</small></div><div><button class="btn" data-open="${x.id}">Edit</button> <button class="btn x" data-hdel="${x.id}">✕</button></div></div>`).join(""):'<p class="hint">No saved estimates yet. They appear here automatically.</p>'}
 $("hist").addEventListener("click",e=>{const o=e.target.dataset.open,d=e.target.dataset.hdel,b=e.target;
  if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));migrateLegacyProducts();syncSavedProducts();if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
