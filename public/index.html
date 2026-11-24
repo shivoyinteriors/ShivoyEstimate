@@ -59,6 +59,7 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card"><h3 style="margin:0 0 10px">Grinder Paper</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="gpRows"></tbody></table></div><div class="bar noprint"><select id="gpAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">Wall Plug</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="wpRows"></tbody></table></div><div class="bar noprint"><select id="wpAdd" style="width:auto;min-width:220px"></select></div></div>
 <div class="card"><h3 style="margin:0 0 10px">L-Corner</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="lcRows"></tbody></table></div><div class="bar noprint"><select id="lcAdd" style="width:auto;min-width:220px"></select></div></div>
+<div class="card"><h3 style="margin:0 0 10px">Pine Door</h3><div class="tw"><table><thead><tr><th>No.</th><th>Door Thickness</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="pineRows"></tbody></table></div><div class="bar noprint"><button class="btn" id="pineAdd">+ Add Pine Door</button></div><p class="hint noprint">Select the door thickness, enter its size, then press Enter to add another size with the same thickness.</p></div>
 <div class="card"><h3 style="margin:0 0 10px">Other Items</h3><div class="tw"><table><thead><tr><th>No.</th><th>Item</th><th>Size</th><th>Qty</th><th>Rate</th><th style="text-align:right">Total</th><th class="x"></th></tr></thead><tbody id="rows"></tbody></table></div>
 <div class="bar noprint"><button class="btn" id="add">+ Add Item</button><div id="savedOtherPicker" class="multi-picker"></div><span id="savedItemStatus" class="hint" style="align-self:center"></span><button class="btn d" id="print">Preview & Download PDF</button><button class="btn x" id="clear">Clear all</button></div>
 <div class="total"><span>TOTAL</span><span id="grand">₹0</span></div>
@@ -113,7 +114,7 @@ function calc(r){const q=+r.qty||0,rt=+r.rate||0;if(AREA.includes(r.cat)){const 
 function sortOtherRows(){S.rows.sort((a,b)=>Number(String(b.qty??"").trim()!=="")-Number(String(a.qty??"").trim()!==""))}
 function totals(){let g=0;S.rows.forEach((r,i)=>{const t=calc(r);g+=t;const c=$("t"+i);if(c)c.textContent=inr(t)});
  [["plyRows","pt"],["hdfRows","ht"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=calc({cat:"H.D.F",size:r.size||"8 * 4",qty:r.qty,rate:r.rate});g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
- [["adRows","ad"],["alpRows","al"],["jointRows","jt"],["pattiRows","wt"],["lpRows","lp"],["sdRows","sd"],["ckRows","ck"],["gpRows","gp"],["wpRows","wp"],["lcRows","lc"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
+ [["adRows","ad"],["alpRows","al"],["jointRows","jt"],["pattiRows","wt"],["lpRows","lp"],["sdRows","sd"],["ckRows","ck"],["gpRows","gp"],["wpRows","wp"],["lcRows","lc"],["pineRows","pine"]].forEach(([k,p])=>(S[k]||[]).forEach((r,i)=>{const t=(+r.qty||0)*(+r.rate||0);g+=t;const c=$(p+i);if(c)c.textContent=inr(t)}));
  S.grand=g;$("grand").textContent=inr(g)}
 function render(){
  $("rows").innerHTML=S.rows.map((r,i)=>`<tr><td class="n">${i+1}</td>
@@ -127,10 +128,14 @@ function render(){
 $("rows").addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;S.rows[i][k]=e.target.value;totals();save()});
 $("rows").addEventListener("change",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||!["name","size","rate"].includes(k))return;if(String(S.rows[i].name||"").trim()&&String(S.rows[i].size||"").trim())saveItemForLater(+i)});
 $("rows").addEventListener("click",async e=>{const d=e.target.dataset.del,si=e.target.dataset.saveItem;if(d!=null){S.rows.splice(d,1);save();render()}else if(si!=null){await saveItemForLater(+si)}});
-$("est").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.tagName!=="INPUT"||e.target.dataset.k!=="qty")return;e.preventDefault();
- const active=e.target,rowIndex=Number(active.dataset.i),rowBody=active.closest("tbody"),rowArray=rowBody&&rowBody.id==="rows"?S.rows:null,current=rowArray?rowArray[rowIndex]:null;
+$("est").addEventListener("keydown",e=>{
+ if(e.key!=="Enter"||e.target.tagName!=="INPUT")return;
+ const fieldKind=e.target.dataset.k;
+ if(fieldKind!=="qty"&&fieldKind!=="rate")return;
+ e.preventDefault();
+ const active=e.target,rowIndex=Number(active.dataset.i),rowBody=active.closest("tbody"),rowArray=fieldKind==="qty"&&rowBody&&rowBody.id==="rows"?S.rows:null,current=rowArray?rowArray[rowIndex]:null;
  if(rowArray){sortOtherRows();render();save();const index=S.rows.indexOf(current),next=[...$("rows").querySelectorAll('input[data-k="qty"]')][index+1];if(next){next.focus();return}}
- const fields=[...$("est").querySelectorAll('input[data-k="qty"]')],position=fields.findIndex(field=>field===active),next=fields[position+1]||fields[0];if(next)next.focus()
+ const fields=[...$("est").querySelectorAll(`input[data-k="${fieldKind}"]`)],position=fields.findIndex(field=>field===active),next=fields[position+1]||fields[0];if(next)next.focus();
 });
 $("sizes").addEventListener("input",e=>{const c=e.target.dataset.sz;S.sizes[c]=e.target.value.split("\n").map(s=>s.trim()).filter(Boolean);save()});
 $("sizes").addEventListener("change",render);
@@ -161,10 +166,10 @@ function setPly(k){const old=S.ply;if(k===old){$("plysel").value=k;return}
 document.querySelectorAll('input[name=ply]').forEach(r=>r.onchange=()=>{newPly=r.value});
 $("plysel").onchange=()=>setPly($("plysel").value);
 $("enter").onclick=()=>{if(!$("s_client").value.trim()){$("s_client").style.borderColor="#b3392b";$("s_client").placeholder="Please enter client name";$("s_client").focus();return}
- $("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes,screwSizes:S.screwSizes,woodSizes:S.woodSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},rows:[]});inEst=true;$("notes").value=S.notes;
+$("s_client").style.borderColor="";S=Object.assign({sizes:S.sizes,alpSizes:S.alpSizes,screwSizes:S.screwSizes,woodSizes:S.woodSizes},{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),started:1,notes:"TRANSPORTATION WILL BE EXTRA",ply:newPly,plyRates:{},rows:[],pineRows:[{mm:"",size:"",qty:"",rate:""}]});inEst=true;$("notes").value=S.notes;
  S.client=$("s_client").value;S.date=$("s_date").value;S.contact=$("s_contact").value;
  ["client","date","contact"].forEach(k=>$(k).value=S[k]);
- const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();
+ const th=(S.ply.match(/(\d+)MM/)||[])[1]||"18";S.plyRows=[{t:th,qty:1,rate:"",fixed:1},{t:"12",qty:1,rate:"",fixed:1}];S.hdfRows=[{kind:"H.D.F",t:"4",size:"8 * 4",qty:1,rate:""},{kind:"H.D.F",t:"6",size:"8 * 4",qty:1,rate:""}];S.jointRows=[{s:"3 * 1.5",h:"7.5",qty:1,rate:""},{s:"3 * 1",h:"7.5",qty:1,rate:""}];S.pattiRows=[];S.adRows=[];S.alpRows=[];S.lpRows=[];S.sdRows=[];S.ckRows=[];S.gpRows=[];S.wpRows=[];S.lcRows=[];save();render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();renderPine();
  $("setup").hidden=true;$("est").hidden=false;scrollTo(0,0)};
 $("back").onclick=()=>{inEst=false;["client","contact"].forEach(k=>$("s_"+k).value="");$("s_date").value=new Date().toISOString().slice(0,10);$("est").hidden=true;$("setup").hidden=false;renderHist();scrollTo(0,0)};
 showBen();
@@ -274,6 +279,16 @@ $("alpRows").addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null
 $("alpRows").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.alpRows.splice(d,1);save();renderAlp()}});
 renderAlp();
 
+function renderPine(){S.pineRows=S.pineRows||[];
+ $("pineRows").innerHTML=S.pineRows.map((r,i)=>{const d=`data-i="${i}"`;return `<tr><td class="n">${i+1}</td><td><select ${d} data-k="mm" aria-label="Pine door thickness"><option value="">Select MM…</option>${["35","40","45"].map(mm=>`<option value="${mm}" ${String(r.mm)===mm?"selected":""}>${mm}MM</option>`).join("")}</select></td><td><input ${d} data-k="size" value="${esc(r.size)}" placeholder="Door size, e.g. 30 * 84"></td><td><input class="q" type="number" min="0" step="any" ${d} data-k="qty" value="${esc(r.qty)}"></td><td><input class="r" type="number" min="0" step="any" ${d} data-k="rate" value="${esc(r.rate)}"></td><td class="t" id="pine${i}"></td><td class="x"><button class="btn x" data-del="${i}">✕</button></td></tr>`}).join("");totals()}
+const pineRows=$("pineRows");
+pineRows.addEventListener("input",e=>{const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||!["size","qty","rate"].includes(k))return;S.pineRows[i][k]=e.target.value;totals();save()});
+pineRows.addEventListener("change",e=>{const i=e.target.dataset.i;if(i==null||e.target.dataset.k!=="mm")return;S.pineRows[i].mm=e.target.value;save()});
+pineRows.addEventListener("keydown",e=>{if(e.key!=="Enter"||e.target.dataset.k!=="size"||!e.target.value.trim())return;e.preventDefault();const i=Number(e.target.dataset.i),mm=S.pineRows[i].mm;S.pineRows.splice(i+1,0,{mm,size:"",qty:"",rate:""});save();renderPine();const next=pineRows.querySelector(`input[data-i="${i+1}"][data-k="size"]`);if(next)next.focus()});
+pineRows.addEventListener("click",e=>{const d=e.target.dataset.del;if(d!=null){S.pineRows.splice(d,1);save();renderPine()}});
+$("pineAdd").onclick=()=>{const previous=S.pineRows[S.pineRows.length-1];S.pineRows.push({mm:previous?previous.mm:"",size:"",qty:"",rate:""});save();renderPine();const next=pineRows.lastElementChild&&pineRows.lastElementChild.querySelector('select[data-k="mm"]');if(next)next.focus()};
+renderPine();
+
 const he=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const fd=s=>s?s.split("-").reverse().join("/"):"",num=n=>Math.round(n).toLocaleString("en-IN");
 function cellTxt(n){let s="";n.childNodes.forEach(c=>{if(c.nodeType===3)s+=c.textContent;else if(c.tagName==="INPUT")s+=" "+c.value+" ";else if(c.tagName==="SELECT")s+=" "+(c.options[c.selectedIndex]?c.options[c.selectedIndex].textContent:"")+" ";else s+=" "+cellTxt(c)+" "});return s.replace(/\s+/g," ").trim()}
@@ -317,6 +332,7 @@ function renderSavedSelectors(){
 renderSavedSelectors();
 function rowInfo(tr){const td=[...tr.children],id=tr.parentNode.id;let name,size,qi,ri,ti;
  if(id==="rows"){name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
+ else if(id==="pineRows"){const mm=td[1].querySelector("select").value;name=(mm?mm+"MM ":"")+"PINE DOOR";size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  else if(id==="lpRows"){name="S.S "+cellTxt(td[1])+" SCREW";size=cellTxt(td[2]);qi=3;ri=4;ti=5}
  else if(id==="alpRows"){name=cellTxt(td[1]);size=cellTxt(td[2])+" * "+cellTxt(td[3]);qi=4;ri=5;ti=6}
  else{name=cellTxt(td[1]);size=cellTxt(td[2]);qi=3;ri=4;ti=5}
@@ -382,7 +398,7 @@ let hT;function saveHist(){if(!inEst||!S.id)return;S.updated=Date.now();const co
 function renderHist(){const l=getHist();$("hist").innerHTML=l.length?l.map(x=>`<div class="hrow"><div><b>${he(x.client)}</b><br><small style="color:var(--mute)">${fd(x.date)} · ${he(x.ply)} · ₹${num(x.grand||0)}</small></div><div><button class="btn" data-open="${x.id}">Edit</button> <button class="btn x" data-hdel="${x.id}">✕</button></div></div>`).join(""):'<p class="hint">No saved estimates yet. They appear here automatically.</p>'}
 $("hist").addEventListener("click",e=>{const o=e.target.dataset.open,d=e.target.dataset.hdel,b=e.target;
  if(o){const x=getHist().find(z=>z.id===o);if(!x)return;S=JSON.parse(JSON.stringify(x));S.sizes=S.sizes||JSON.parse(JSON.stringify(DEF));S.alpSizes=S.alpSizes||SHARED_CONFIG.alpSizes;S.screwSizes=S.screwSizes||SHARED_CONFIG.screwSizes;S.woodSizes=S.woodSizes||SHARED_CONFIG.woodSizes||{jointRows:[],pattiRows:[]};migrateLegacyProducts();syncSavedProducts();if(!PLY[S.ply])S.ply="DARNEL 18MM";inEst=true;skipFill=true;setTimeout(()=>skipFill=false,80);
-  ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
+  ["client","date","contact","notes"].forEach(k=>$(k).value=S[k]||"");$("plysel").value=S.ply;render();showBen();renderSecs();renderW();renderX();renderA();renderAlp();renderPine();$("setup").hidden=true;$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0)}
  else if(d){if(b.dataset.arm){ESTS=ESTS.filter(z=>z.id!==d);api("DELETE","/api/estimates/"+d);renderHist()}else{b.dataset.arm=1;b.textContent="Delete?";setTimeout(()=>{b.dataset.arm="";b.textContent="✕"},3000)}}});
 $("pply").onclick=()=>{$("prev").hidden=true;$("est").hidden=false;scrollTo(0,0);$("plysel").focus()};
 renderHist();
