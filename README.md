@@ -1,7 +1,9 @@
 # Shivoy Interior – Estimate Maker
 
 Node + Express server, MongoDB Atlas database, single-page frontend (`public/index.html`).
-Stored in MongoDB: previous estimates, saved rates, and your product size lists (including new sizes you add).
+Stored in MongoDB: previous estimates, saved rates, product lists, estimate configuration, and the editable catalog used by the management screen.
+
+Use **Manage all data** in the app to edit plywood names, estimate labels and benefits; section options and size lists; saved products; and rates. These changes are stored in the `settings` collection. Set `APP_PASSWORD` in the deployment environment to protect the site and management screen.
 
 ## 1. MongoDB Atlas (once)
 1. Create a free cluster at https://cloud.mongodb.com.
@@ -26,6 +28,6 @@ Open http://localhost:3000. Without `MONGODB_URI` it runs with temporary memory 
 
 ## Files
 - `server.js` – API + MongoDB (collections: `estimates`, `settings`)
-- `public/index.html` – the whole website
+- `public/index.html` – the whole website, including the management screen and default catalog
 - `public/logo.png` – your Shivoy Interior logo
-- Plywood brands and their benefits are near the top of the script in `index.html` (`const PLY=`).
+- Default plywood brands and their benefits are in `DEFAULT_PLY` in `index.html`; saved management changes override these defaults.
